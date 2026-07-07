@@ -61,6 +61,46 @@ async function image(slide, file, position, alt, opts = {}) {
   });
 }
 
+function refineAgenda(slide) {
+  deleteBodyObjects(slide);
+
+  const agenda = [
+    "个人介绍",
+    "背景与目标",
+    "工作产出与案例",
+    "主要工作",
+    "思考与总结",
+  ];
+  const circleLeft = 313;
+  const barLeft = 381;
+  const barWidth = 586;
+  const firstTop = 160;
+  const rowGap = 88;
+
+  agenda.forEach((label, index) => {
+    const circleTop = firstTop + index * rowGap;
+    const barTop = circleTop + 9;
+
+    shape(slide, "rect", { left: barLeft, top: barTop, width: barWidth, height: 50 }, { fill: C.qwen });
+    shape(slide, "ellipse", { left: circleLeft, top: circleTop, width: 68, height: 68 }, {
+      fill: C.white,
+      line: { style: "solid", fill: C.qwen, width: 2 },
+    });
+    text(slide, String(index + 1), { left: circleLeft, top: circleTop + 13, width: 68, height: 36 }, {
+      size: 30,
+      bold: true,
+      color: C.qwen,
+      align: "center",
+    });
+    text(slide, label, { left: barLeft, top: barTop + 11, width: barWidth, height: 28 }, {
+      size: 26,
+      bold: true,
+      color: C.white,
+      align: "center",
+    });
+  });
+}
+
 function deleteBodyObjects(slide) {
   for (const collection of [slide.shapes.items, slide.images.items]) {
     for (const item of [...collection]) {
@@ -72,64 +112,100 @@ function deleteBodyObjects(slide) {
   }
 }
 
+function removeTimelineHeaderSubtitle(slide) {
+  for (const item of [...slide.shapes.items]) {
+    const left = Number(item.position.left);
+    const top = Number(item.position.top);
+    if (left >= 120 && left < 820 && top >= 40 && top < 90 && item.text) {
+      item.delete();
+    }
+  }
+  text(slide, "个人介绍", { left: 132, top: 49, width: 634, height: 28 }, {
+    size: 24,
+    bold: true,
+    color: C.white,
+    align: "center",
+  });
+}
+
 async function refinePersonalTimeline(slide) {
   const qwenLogo = path.join(ROOT, "assets", "qwen", "qwen-logo.png");
   const rucLogo = path.join(ROOT, "assets", "brand", "ruc-seal.png");
   const tencentAdsLogo = path.join(ROOT, "assets", "brand", "tencent-ads-logo.png");
 
+  removeTimelineHeaderSubtitle(slide);
   deleteBodyObjects(slide);
 
-  text(slide, "李思奥（龙舌兰）", { left: 88, top: 152, width: 390, height: 54 }, {
+  text(slide, "李思奥（龙舌兰）", { left: 80, top: 148, width: 1120, height: 48 }, {
     size: 36,
     bold: true,
     color: C.qwen,
+    align: "center",
   });
-  shape(slide, "rect", { left: 92, top: 220, width: 150, height: 4 }, { fill: C.qwen });
+  shape(slide, "rect", { left: 565, top: 207, width: 150, height: 4 }, { fill: C.qwen });
 
-  shape(slide, "rect", { left: 558, top: 150, width: 2, height: 430 }, { fill: C.line });
+  const lineX = 390;
+  const dotSize = 30;
+  const firstY = 248;
+  const rowGap = 92;
+  shape(slide, "rect", { left: lineX, top: 238, width: 2, height: 328 }, { fill: C.line });
 
   const events = [
     {
       logo: rucLogo,
-      logoPosition: { left: 452, top: 157, width: 50, height: 50 },
-      date: "2018.09 - 2024.06",
-      text: "中国人民大学统计学院（本硕）",
+      logoBox: { left: 206, width: 62, height: 62 },
+      date: "2018.09–2024.06",
+      org: "中国人民大学统计学院",
+      work: "本硕",
     },
     {
       logo: tencentAdsLogo,
-      logoPosition: { left: 424, top: 270, width: 116, height: 22 },
-      date: "2024.07 - 2025.03",
-      text: "流量支持中心\n广告业务问题全链路策略优化",
+      logoBox: { left: 160, width: 152, height: 29 },
+      date: "2024.07–2025.03",
+      org: "腾讯广告 —— 流量支持中心",
+      work: "广告业务问题全链路策略优化",
     },
     {
       logo: tencentAdsLogo,
-      logoPosition: { left: 424, top: 372, width: 116, height: 22 },
-      date: "2025.04 - 2026.03",
-      text: "AI 推荐中心\n生成式推荐与大模型广告落地",
+      logoBox: { left: 160, width: 152, height: 29 },
+      date: "2025.04–2026.03",
+      org: "腾讯广告 —— AI 推荐中心",
+      work: "生成式推荐与大模型广告落地",
     },
     {
       logo: qwenLogo,
-      logoPosition: { left: 430, top: 469, width: 34, height: 34 },
-      date: "2026.04 - 至今",
-      text: "学习创新\n教育 OneRec 探索",
+      logoBox: { left: 210, width: 56, height: 56 },
+      date: "2026.04–至今",
+      org: "阿里千问 —— 学习创新",
+      work: "教育 OneRec 探索",
       active: true,
     },
   ];
 
   events.forEach((event, index) => {
-    const y = 164 + index * 102;
-    shape(slide, "ellipse", { left: 546, top: y + 5, width: 28, height: 28 }, {
+    const y = firstY + index * rowGap;
+    const dotCenterY = y + 20;
+    event.logoPosition = {
+      left: event.logoBox.left,
+      top: dotCenterY - event.logoBox.height / 2,
+      width: event.logoBox.width,
+      height: event.logoBox.height,
+    };
+    shape(slide, "ellipse", { left: lineX - dotSize / 2 + 1, top: dotCenterY - dotSize / 2, width: dotSize, height: dotSize }, {
       fill: event.active ? C.qwen : C.white,
       line: { style: "solid", fill: event.active ? C.qwen : C.blue, width: 3 },
     });
-    text(slide, event.date, { left: 622, top: y - 2, width: 230, height: 30 }, {
-      size: 22,
-      bold: true,
+    text(slide, event.date, { left: 460, top: y - 1, width: 205, height: 34 }, {
+      size: 20,
       color: C.ink,
     });
-    text(slide, event.text, { left: 872, top: y, width: 326, height: 54 }, {
+    text(slide, event.org, { left: 690, top: y - 7, width: 540, height: 24 }, {
       size: 18,
-      color: C.body,
+      color: C.ink,
+    });
+    text(slide, event.work, { left: 690, top: y + 19, width: 540, height: 24 }, {
+      size: 16,
+      color: C.ink,
     });
   });
 
@@ -138,6 +214,7 @@ async function refinePersonalTimeline(slide) {
   }
 }
 
+refineAgenda(deck.slides.items[1]);
 await refinePersonalTimeline(deck.slides.items[2]);
 
 await saveSectionDeck("01", deck);
