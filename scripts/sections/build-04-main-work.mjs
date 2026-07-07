@@ -63,16 +63,18 @@ async function blobFor(imagePath) {
 }
 
 async function addImage(slide, imagePath, position, alt, opts = {}) {
-  return slide.images.add({
+  const imageOpts = {
     blob: await blobFor(imagePath),
     contentType: "image/png",
     alt,
-    fit: opts.fit ?? "contain",
-    crop: opts.crop,
     geometry: opts.geometry,
     borderRadius: opts.borderRadius,
     position,
-  });
+  };
+  if (opts.fit !== false) imageOpts.fit = opts.fit ?? "contain";
+  if (opts.crop) imageOpts.crop = opts.crop;
+  if (opts.lockAspectRatio !== undefined) imageOpts.lockAspectRatio = opts.lockAspectRatio;
+  return slide.images.add(imageOpts);
 }
 
 function noLine() {
@@ -357,7 +359,7 @@ async function refineTokenizerIntroSlide() {
     path.join(ROOT, "assets", "md_images", "img25_u6f2d4263.png"),
     { left: 86, top: 306, width: 638, height: 320 },
     "RQ-VAE tokenizer architecture",
-    { fit: "cover", crop: { left: 0, top: 0, right: 0, bottom: 0 } },
+    { fit: false, lockAspectRatio: false },
   );
 
   shape(slide, "roundRect", { left: 760, top: 300, width: 420, height: 178 }, {
@@ -746,78 +748,61 @@ function refineI2IRecommendationSlide() {
     color: C.body,
   });
 
-  shape(slide, "roundRect", { left: 84, top: 214, width: 514, height: 164 }, {
+  shape(slide, "roundRect", { left: 84, top: 214, width: 414, height: 164 }, {
     fill: "#F8FBFF",
     line: { style: "solid", fill: "#CFE6FA", width: 1.2 },
     shadow: "shadow-sm",
     borderRadius: "rounded-lg",
   });
-  text(slide, "输入/输出协议", { left: 108, top: 236, width: 180, height: 24 }, {
+  text(slide, "任务定义", { left: 108, top: 236, width: 180, height: 24 }, {
     size: 19,
     bold: true,
     color: C.qwen,
   });
-  shape(slide, "roundRect", { left: 108, top: 272, width: 214, height: 70 }, {
-    fill: "#FFFFFF",
-    line: { style: "solid", fill: "#E0EEFB", width: 1 },
-    borderRadius: "rounded-md",
+  const taskPoints = [
+    ["锚点理解", "提取知识点、解题模型、题型与设问情境"],
+    ["约束遵循", "按 types / count 控制推荐类型与数量"],
+    ["推荐解释", "生成粗粒度 CoT 与逐项推荐理由"],
+  ];
+  taskPoints.forEach(([title, desc], index) => {
+    const top = 276 + index * 30;
+    shape(slide, "ellipse", { left: 110, top: top + 2, width: 16, height: 16 }, {
+      fill: index === 0 ? C.qwen : index === 1 ? C.green : C.orange,
+      line: noLine(),
+    });
+    text(slide, String(index + 1), { left: 110, top: top + 4, width: 16, height: 10 }, {
+      size: 8,
+      bold: true,
+      color: "#FFFFFF",
+      align: "center",
+    });
+    text(slide, title, { left: 138, top: top - 1, width: 78, height: 16 }, {
+      size: 13,
+      bold: true,
+      color: C.ink,
+    });
+    text(slide, desc, { left: 222, top: top - 1, width: 230, height: 16 }, {
+      size: 10,
+      color: C.body,
+    });
   });
-  text(slide, "Input", { left: 126, top: 284, width: 70, height: 18 }, {
-    size: 13,
-    bold: true,
-    color: C.ink,
-  });
-  text(slide, "anchor：题干/学段/学科\nconstraint：types + count", {
-    left: 126,
-    top: 308,
-    width: 174,
-    height: 26,
-  }, {
-    size: 11,
-    color: C.body,
-  });
-  text(slide, "→", { left: 334, top: 292, width: 30, height: 26 }, {
-    size: 26,
-    bold: true,
-    color: C.qwen,
-    align: "center",
-  });
-  shape(slide, "roundRect", { left: 374, top: 272, width: 190, height: 70 }, {
-    fill: "#FFFFFF",
-    line: { style: "solid", fill: "#E0EEFB", width: 1 },
-    borderRadius: "rounded-md",
-  });
-  text(slide, "Output", { left: 392, top: 284, width: 74, height: 18 }, {
-    size: 13,
-    bold: true,
-    color: C.ink,
-  });
-  text(slide, "cot.step1 / step2\nrecommendations：reason + SID", {
-    left: 392,
-    top: 308,
-    width: 150,
-    height: 28,
-  }, {
-    size: 11,
-    color: C.body,
-  });
-  text(slide, "示例：围绕线段垂直平分线题，按 count=1 生成同解题模型推荐题与理由。", {
+  text(slide, "应用：SID 反查真实物品，支撑智能找题与举一反三。", {
     left: 108,
-    top: 352,
-    width: 450,
+    top: 354,
+    width: 340,
     height: 16,
   }, {
     size: 11,
     color: C.grayText,
   });
 
-  shape(slide, "roundRect", { left: 630, top: 214, width: 566, height: 164 }, {
+  shape(slide, "roundRect", { left: 530, top: 214, width: 666, height: 164 }, {
     fill: "#FFFFFF",
     line: { style: "solid", fill: "#CFE6FA", width: 1.2 },
     shadow: "shadow-sm",
     borderRadius: "rounded-lg",
   });
-  text(slide, "Item 反查链路", { left: 654, top: 236, width: 180, height: 24 }, {
+  text(slide, "Item 反查链路", { left: 554, top: 236, width: 180, height: 24 }, {
     size: 19,
     bold: true,
     color: C.qwen,
@@ -828,8 +813,8 @@ function refineI2IRecommendationSlide() {
     ["3", "未命中剔除", "仍无法反查时去除该推荐"],
   ];
   lookupSteps.forEach(([idx, title, desc], index) => {
-    const left = 656 + index * 170;
-    shape(slide, "roundRect", { left, top: 284, width: 140, height: 62 }, {
+    const left = 558 + index * 196;
+    shape(slide, "roundRect", { left, top: 284, width: 166, height: 62 }, {
       fill: index === 0 ? "#F0FFF6" : index === 1 ? "#F4F1FF" : "#FFF7ED",
       line: { style: "solid", fill: index === 0 ? "#A7F3D0" : index === 1 ? "#CDC8FF" : "#FDBA74", width: 1 },
       borderRadius: "rounded-md",
@@ -844,17 +829,17 @@ function refineI2IRecommendationSlide() {
       color: "#FFFFFF",
       align: "center",
     });
-    text(slide, title, { left: left + 46, top: 296, width: 82, height: 18 }, {
+    text(slide, title, { left: left + 46, top: 296, width: 96, height: 18 }, {
       size: 13,
       bold: true,
       color: C.ink,
     });
-    text(slide, desc, { left: left + 46, top: 318, width: 78, height: 20 }, {
+    text(slide, desc, { left: left + 46, top: 318, width: 104, height: 20 }, {
       size: 9,
       color: C.body,
     });
     if (index < lookupSteps.length - 1) {
-      text(slide, "→", { left: left + 146, top: 300, width: 24, height: 22 }, {
+      text(slide, "→", { left: left + 172, top: 300, width: 24, height: 22 }, {
         size: 22,
         bold: true,
         color: C.grayText,
@@ -863,9 +848,9 @@ function refineI2IRecommendationSlide() {
     }
   });
   text(slide, "默认最多回退到前两层 (a,b)，保证“能落库”与“尽量保留语义精度”之间平衡。", {
-    left: 654,
+    left: 554,
     top: 354,
-    width: 470,
+    width: 570,
     height: 16,
   }, {
     size: 11,
@@ -1202,7 +1187,7 @@ function refineConstrainedDecodingFlowSlide() {
   replaceFirstText(slide, "主要工作 | 推理：限制性解码", "主要工作 | 限制性解码：Trie 构造");
   deleteObjectsInBox(slide, { left: 70, top: 132, width: 1140, height: 520 });
 
-  text(slide, "先把合法 SID 路径压缩成共享前缀树，在线解码时只允许沿真实路径继续。", {
+  text(slide, "把合法 SID 库预编译成前缀树：每个标签与码前缀只暴露真实存在的下一层 code。", {
     left: 84,
     top: 148,
     width: 980,
@@ -1213,240 +1198,200 @@ function refineConstrainedDecodingFlowSlide() {
     color: C.ink,
   });
 
-  shape(slide, "roundRect", { left: 76, top: 196, width: 1128, height: 470 }, {
-    fill: "#FFFFFF",
-    line: { style: "solid", fill: C.green, width: 1.8 },
-    shadow: "shadow-sm",
-  });
-  shape(slide, "ellipse", { left: 92, top: 214, width: 38, height: 38 }, {
-    fill: C.green,
-    line: noLine(),
-  });
-  text(slide, "1", { left: 92, top: 223, width: 38, height: 20 }, {
-    size: 15,
-    bold: true,
-    color: "#FFFFFF",
-    align: "center",
-  });
-  text(slide, "从 case 到 Trie：合法路径如何被压缩成共享前缀树", {
-    left: 144,
-    top: 222,
-    width: 720,
-    height: 26,
-  }, {
-    size: 22,
-    bold: true,
-    color: C.green,
-  });
-
-  shape(slide, "roundRect", { left: 124, top: 270, width: 892, height: 46 }, {
-    fill: "#F7FBFF",
-    line: { style: "solid", fill: "#8BC8FF", width: 1.1 },
-  });
-  text(slide, "<|item_begin|>题目,高中,英语,<a_689><b_483><c_1914><|item_end|>", {
-    left: 150,
-    top: 284,
-    width: 840,
-    height: 18,
-  }, {
-    size: 16,
-    bold: true,
-    color: C.ink,
-    align: "center",
-  });
-  text(slide, "标签（描述题目的维度信息）", { left: 262, top: 252, width: 250, height: 16 }, {
-    size: 11,
-    color: "#1677FF",
-    align: "center",
-  });
-  shape(slide, "rect", { left: 262, top: 266, width: 248, height: 2 }, {
-    fill: "#1677FF",
-    line: noLine(),
-  });
-  text(slide, "分层码（按层级逐步定位 Item）", { left: 608, top: 252, width: 260, height: 16 }, {
-    size: 11,
-    color: C.green,
-    align: "center",
-  });
-  shape(slide, "rect", { left: 608, top: 266, width: 260, height: 2 }, {
-    fill: C.green,
-    line: noLine(),
-  });
-
-  text(slide, "标签部分", { left: 132, top: 348, width: 84, height: 20 }, {
-    size: 14,
-    bold: true,
-    color: "#1677FF",
-  });
-  const labelNode = shape(slide, "roundRect", { left: 216, top: 336, width: 160, height: 42 }, {
-    fill: "#EEF6FF",
-    line: { style: "solid", fill: "#83C5FF", width: 1.1 },
-  });
-  text(slide, "题目，高中，英语", { left: 216, top: 347, width: 160, height: 18 }, {
-    size: 14,
-    bold: true,
-    color: "#1677FF",
-    align: "center",
-  });
-  const labelIdNode = shape(slide, "roundRect", { left: 432, top: 336, width: 120, height: 42 }, {
-    fill: "#FFFFFF",
-    line: { style: "solid", fill: "#83C5FF", width: 1.1 },
-  });
-  text(slide, "label_id", { left: 432, top: 347, width: 120, height: 18 }, {
-    size: 14,
-    bold: true,
-    color: C.ink,
-    align: "center",
-  });
-  slide.shapes.connect(labelNode, labelIdNode, {
-    kind: "straight",
-    fromSide: "right",
-    toSide: "left",
-    line: { style: "solid", fill: "#1677FF", width: 1.3 },
-    head: { type: "arrow", width: "sm", length: "sm" },
-  });
-
-  text(slide, "码路径部分", { left: 132, top: 414, width: 94, height: 20 }, {
-    size: 14,
-    bold: true,
-    color: C.green,
-  });
-  const codeNodes = [
-    ["a=689", 240],
-    ["b=483", 382],
-    ["c=1914", 524],
-  ].map(([label, left]) => {
-    const node = shape(slide, "roundRect", { left, top: 402, width: 94, height: 42 }, {
-      fill: "#F0FFF6",
-      line: { style: "solid", fill: "#6DCE94", width: 1.1 },
+  const panelTop = 198;
+  const panelH = 388;
+  const card = (left, top, width, height, title, subtitle, opts = {}) => {
+    shape(slide, "roundRect", { left, top, width, height }, {
+      fill: opts.fill ?? "#FFFFFF",
+      line: { style: "solid", fill: opts.stroke ?? "#D7E8F7", width: 1.1 },
+      shadow: opts.shadow ?? "shadow-sm",
+      borderRadius: "rounded-lg",
     });
-    text(slide, label, { left, top: 413, width: 94, height: 18 }, {
-      size: 14,
+    text(slide, title, { left: left + 18, top: top + 16, width: width - 36, height: 24 }, {
+      size: opts.titleSize ?? 18,
       bold: true,
-      color: C.green,
-      align: "center",
+      color: opts.titleColor ?? C.qwen,
     });
-    return node;
-  });
-  slide.shapes.connect(codeNodes[0], codeNodes[1], {
-    kind: "straight",
-    fromSide: "right",
-    toSide: "left",
-    line: { style: "solid", fill: C.green, width: 1.3 },
-    head: { type: "arrow", width: "sm", length: "sm" },
-  });
-  slide.shapes.connect(codeNodes[1], codeNodes[2], {
-    kind: "straight",
-    fromSide: "right",
-    toSide: "left",
-    line: { style: "solid", fill: C.green, width: 1.3 },
-    head: { type: "arrow", width: "sm", length: "sm" },
-  });
+    if (subtitle) {
+      text(slide, subtitle, { left: left + 18, top: top + 46, width: width - 36, height: 18 }, {
+        size: 11,
+        color: C.grayText,
+      });
+    }
+  };
 
-  shape(slide, "rect", { left: 110, top: 466, width: 1028, height: 1.2 }, {
-    fill: "#CFE6FA",
-    line: noLine(),
+  card(76, panelTop, 332, panelH, "1. SID 拆解", "标签负责业务约束，分层码负责语义定位", {
+    fill: "#F8FBFF",
   });
-
-  shape(slide, "roundRect", { left: 128, top: 492, width: 292, height: 40 }, {
-    fill: "#F0FFF6",
-    line: { style: "solid", fill: "#A7F3D0", width: 1 },
+  shape(slide, "roundRect", { left: 104, top: 278, width: 276, height: 66 }, {
+    fill: "#FFFFFF",
+    line: { style: "solid", fill: "#CFE6FA", width: 1 },
+    borderRadius: "rounded-md",
   });
-  text(slide, "合法路径集合（同一标签下）", { left: 128, top: 503, width: 292, height: 18 }, {
-    size: 14,
+  text(slide, "<|item_begin|> 题目,高中,英语,", { left: 122, top: 292, width: 238, height: 16 }, {
+    size: 12,
     bold: true,
-    color: C.green,
+    color: "#1677FF",
     align: "center",
   });
-  [
-    ["优质题目，高中，地理", "(0,1,2)"],
-    ["优质题目，高中，地理", "(0,1,3)"],
-    ["优质题目，高中，地理", "(0,2,0)"],
-  ].forEach(([label, code], index) => {
-    const y = 534 + index * 24;
-    text(slide, label, { left: 138, top: y, width: 188, height: 18 }, {
-      size: 12,
-      color: C.body,
-      align: "center",
-    });
-    text(slide, "→", { left: 326, top: y, width: 28, height: 18 }, {
-      size: 12,
-      color: C.green,
-      align: "center",
-    });
-    text(slide, code, { left: 354, top: y, width: 58, height: 18 }, {
-      size: 12,
-      bold: true,
-      color: C.green,
-      align: "center",
-    });
-  });
-
-  text(slide, "按共同前缀\n合并公共路径", { left: 454, top: 526, width: 102, height: 42 }, {
+  text(slide, "<a_689><b_483><c_1914> <|item_end|>", { left: 122, top: 316, width: 238, height: 16 }, {
     size: 12,
     bold: true,
     color: C.green,
     align: "center",
   });
-  text(slide, "→", { left: 556, top: 520, width: 70, height: 46 }, {
+  const splitRows = [
+    ["标签元组", "题目 / 高中 / 英语", "#1677FF", "#EEF6FF"],
+    ["label_id", "小整数索引", C.qwen, "#F4F1FF"],
+    ["code_prefix", "a -> b -> c", C.green, "#F0FFF6"],
+  ];
+  splitRows.forEach(([label, value, color, fill], index) => {
+    const top = 378 + index * 48;
+    shape(slide, "roundRect", { left: 104, top, width: 276, height: 34 }, {
+      fill,
+      line: { style: "solid", fill: "#D7E8F7", width: 1 },
+      borderRadius: "rounded-md",
+    });
+    text(slide, label, { left: 120, top: top + 9, width: 86, height: 14 }, {
+      size: 11,
+      bold: true,
+      color,
+    });
+    text(slide, value, { left: 212, top: top + 9, width: 140, height: 14 }, {
+      size: 11,
+      color: C.body,
+      align: "right",
+    });
+  });
+
+  text(slide, "→", { left: 418, top: 354, width: 50, height: 44 }, {
     size: 42,
+    bold: true,
+    color: C.qwen,
+    align: "center",
+  });
+
+  card(472, panelTop, 316, panelH, "2. allowed_next 表", "把路径压成“前缀 -> 下一码集合”", {
+    fill: "#FFFFFF",
+  });
+  shape(slide, "roundRect", { left: 500, top: 276, width: 260, height: 50 }, {
+    fill: "#101E4A",
+    line: noLine(),
+    borderRadius: "rounded-md",
+  });
+  text(slide, "allowed[(label_id, *prefix)]", { left: 516, top: 288, width: 228, height: 16 }, {
+    size: 12,
+    bold: true,
+    color: "#FFFFFF",
+    align: "center",
+  });
+  text(slide, "→ frozenset(合法下一层 code)", { left: 516, top: 308, width: 228, height: 14 }, {
+    size: 10,
+    color: "#DCE8FF",
+    align: "center",
+  });
+  const allowedRows = [
+    ["(L0)", "{0}", "该标签下 a 只能取 0"],
+    ["(L0,0)", "{1,2}", "a=0 后 b 可取 1/2"],
+    ["(L0,0,1)", "{2,3}", "b=1 后 c 可取 2/3"],
+    ["(L0,0,2)", "{0}", "b=2 后 c 只能取 0"],
+  ];
+  allowedRows.forEach(([prefix, next, note], index) => {
+    const top = 354 + index * 42;
+    shape(slide, "roundRect", { left: 500, top, width: 260, height: 30 }, {
+      fill: index % 2 ? "#F8FBFF" : "#FFFFFF",
+      line: { style: "solid", fill: "#E1EBF5", width: 1 },
+      borderRadius: "rounded-md",
+    });
+    text(slide, prefix, { left: 516, top: top + 8, width: 74, height: 12 }, {
+      size: 10,
+      bold: true,
+      color: C.ink,
+    });
+    text(slide, next, { left: 594, top: top + 8, width: 54, height: 12 }, {
+      size: 10,
+      bold: true,
+      color: C.green,
+      align: "center",
+    });
+    text(slide, note, { left: 652, top: top + 8, width: 86, height: 12 }, {
+      size: 8,
+      color: C.grayText,
+      align: "right",
+    });
+  });
+
+  text(slide, "→", { left: 798, top: 354, width: 50, height: 44 }, {
+    size: 42,
+    bold: true,
+    color: C.qwen,
+    align: "center",
+  });
+
+  card(852, panelTop, 352, panelH, "3. 共享前缀 Trie", "同一前缀只存一次，解码时按层查询", {
+    fill: "#F8FBFF",
+  });
+  const node = (label, left, top, width, fill, color = C.ink) => {
+    shape(slide, "roundRect", { left, top, width, height: 34 }, {
+      fill,
+      line: { style: "solid", fill: "#BDE0FF", width: 1 },
+      borderRadius: "rounded-md",
+    });
+    text(slide, label, { left, top: top + 8, width, height: 14 }, {
+      size: 11,
+      bold: true,
+      color,
+      align: "center",
+    });
+  };
+  node("L0: 优质题目/高中/地理", 934, 280, 188, "#EEF6FF", "#1677FF");
+  text(slide, "↓ allowed: {0}", { left: 978, top: 322, width: 100, height: 16 }, {
+    size: 10,
     bold: true,
     color: C.green,
     align: "center",
   });
+  node("a = 0", 984, 350, 88, "#F0FFF6", C.green);
+  text(slide, "↙ allowed: {1,2} ↘", { left: 946, top: 392, width: 164, height: 16 }, {
+    size: 10,
+    bold: true,
+    color: C.green,
+    align: "center",
+  });
+  node("b = 1", 910, 422, 82, "#F4F1FF", C.qwen);
+  node("b = 2", 1064, 422, 82, "#F4F1FF", C.qwen);
+  text(slide, "↙ {2,3} ↘", { left: 896, top: 464, width: 110, height: 16 }, {
+    size: 10,
+    bold: true,
+    color: C.green,
+    align: "center",
+  });
+  text(slide, "↓ {0}", { left: 1088, top: 464, width: 40, height: 16 }, {
+    size: 10,
+    bold: true,
+    color: C.green,
+    align: "center",
+  });
+  node("c = 2", 878, 492, 72, "#FFF7ED", C.orange);
+  node("c = 3", 962, 492, 72, "#FFF7ED", C.orange);
+  node("c = 0", 1070, 492, 72, "#FFF7ED", C.orange);
 
-  const treeNodes = [
-    ["L0\n优质题目,高中,地理", 820, 482, 170, 40, "#EEF6FF"],
-    ["a = 0", 844, 536, 122, 34, "#F0FFF6"],
-    ["b = 1", 728, 586, 92, 32, "#F4F1FF"],
-    ["b = 2", 990, 586, 92, 32, "#F4F1FF"],
-  ];
-  const drawn = treeNodes.map(([label, left, top, width, height, fill]) => {
-    const node = shape(slide, "roundRect", { left, top, width, height }, {
-      fill,
-      line: { style: "solid", fill: "#8AC8A2", width: 1 },
-    });
-    text(slide, label, { left, top: top + 7, width, height: height - 8 }, {
-      size: 11,
-      bold: true,
-      color: C.ink,
-      align: "center",
-    });
-    return node;
+  shape(slide, "roundRect", { left: 170, top: 608, width: 940, height: 44 }, {
+    fill: "#F0FFF6",
+    line: { style: "solid", fill: "#A7F3D0", width: 1 },
+    shadow: "shadow-sm",
+    borderRadius: "rounded-full",
   });
-  const leaves = [
-    ["c = 2", 676],
-    ["c = 3", 786],
-    ["c = 0", 1040],
-  ].map(([label, left]) => {
-    const node = shape(slide, "roundRect", { left, top: 628, width: 78, height: 30 }, {
-      fill: "#FFF7ED",
-      line: { style: "solid", fill: "#FDBA74", width: 1 },
-    });
-    text(slide, label, { left, top: 635, width: 78, height: 16 }, {
-      size: 11,
-      bold: true,
-      color: C.orange,
-      align: "center",
-    });
-    return node;
-  });
-  [
-    [drawn[0], drawn[1]],
-    [drawn[1], drawn[2]],
-    [drawn[1], drawn[3]],
-    [drawn[2], leaves[0]],
-    [drawn[2], leaves[1]],
-    [drawn[3], leaves[2]],
-  ].forEach(([from, to]) => {
-    const connector = slide.shapes.connect(from, to, {
-      kind: "straight",
-      fromSide: "bottom",
-      toSide: "top",
-      line: { style: "solid", fill: "#3568B0", width: 1.2 },
-      head: { type: "none" },
-    });
-    connector.bringToFront();
+  text(slide, "关键点：Trie 不是重新排序，而是在每一步把“不可能属于真实 Item 的下一码”从候选集中移除。", {
+    left: 208,
+    top: 620,
+    width: 864,
+    height: 20,
+  }, {
+    size: 15,
+    bold: true,
+    color: C.ink,
+    align: "center",
   });
 }
 
@@ -1455,7 +1400,7 @@ async function addConstrainedDecodingTrieSlide() {
   const { slide } = deck.slides.insert({ after: previous });
   await addQwenChrome(slide, "限制性解码：整体链路", "25");
 
-  text(slide, "再把 Trie 接入 vLLM 解码链路：任务命中才注入约束，生成后仍走反查和回退兜底。", {
+  text(slide, "Trie 只在命中任务 marker 后接入 vLLM；每步先判断是否处于 SID 块，再写入 logits mask。", {
     left: 84,
     top: 148,
     width: 980,
@@ -1466,118 +1411,132 @@ async function addConstrainedDecodingTrieSlide() {
     color: C.ink,
   });
 
-  shape(slide, "roundRect", { left: 76, top: 196, width: 536, height: 438 }, {
-    fill: "#FFFFFF",
-    line: { style: "solid", fill: "#1677FF", width: 1.8 },
-    shadow: "shadow-sm",
-  });
-  shape(slide, "ellipse", { left: 94, top: 214, width: 38, height: 38 }, {
-    fill: "#1677FF",
-    line: noLine(),
-  });
-  text(slide, "2", { left: 94, top: 223, width: 38, height: 20 }, {
-    size: 15,
-    bold: true,
-    color: "#FFFFFF",
-    align: "center",
-  });
-  text(slide, "整体限制性解码链路", { left: 146, top: 222, width: 360, height: 26 }, {
-    size: 22,
-    bold: true,
-    color: "#1677FF",
-  });
-
-  const flow = [
-    ["离线准备", "合法 SID 库 → SID Trie\n标签+前缀 → 合法下一码", "#EEF6FF", "#1677FF"],
-    ["请求路由", "system prompt marker 命中才注入约束\ntext2sid：完整库    I2I：优质题库", "#F0FFF6", C.green],
-    ["在线生成", "码段内：Trie 限制下一码\n可选：同请求去重剪枝", "#EEF6FF", "#1677FF"],
-    ["安全兜底", "约束不了就放行；剪空回退原候选\n不牺牲可生成性", "#FFF7ED", C.orange],
-    ["Item 反查", "精确匹配 → 前缀回退 → unresolved\n反查负责最终兜底", "#F7FAFC", C.body],
-  ];
-  flow.forEach(([title, body, fill, color], index) => {
-    const y = 270 + index * 70;
-    shape(slide, "roundRect", { left: 124, top: y, width: 420, height: 54 }, {
+  const stage = (index, title, body, left, fill, color) => {
+    shape(slide, "roundRect", { left, top: 210, width: 232, height: 92 }, {
       fill,
-      line: { style: "solid", fill: index === 3 ? "#FDBA74" : "#8BC8FF", width: 1.1 },
+      line: { style: "solid", fill: color, width: 1.2 },
+      shadow: "shadow-sm",
+      borderRadius: "rounded-lg",
     });
-    text(slide, title, { left: 144, top: y + 8, width: 120, height: 18 }, {
+    shape(slide, "ellipse", { left: left + 14, top: 228, width: 32, height: 32 }, {
+      fill: color,
+      line: noLine(),
+    });
+    text(slide, String(index), { left: left + 14, top: 236, width: 32, height: 16 }, {
+      size: 12,
+      bold: true,
+      color: "#FFFFFF",
+      align: "center",
+    });
+    text(slide, title, { left: left + 58, top: 224, width: 150, height: 20 }, {
       size: 15,
       bold: true,
       color,
-      align: "center",
     });
-    text(slide, body, { left: 264, top: y + 9, width: 246, height: 34 }, {
-      size: 11,
+    text(slide, body, { left: left + 58, top: 250, width: 146, height: 34 }, {
+      size: 10,
       color: C.body,
+    });
+  };
+  stage(1, "请求路由", "system prompt marker 命中才注入约束", 84, "#EEF6FF", "#1677FF");
+  stage(2, "决策 allowed", "定位 SID 块，解析标签与当前码层级", 354, "#F0FFF6", C.green);
+  stage(3, "写 logits mask", "只保留合法 token，其余置为 -inf", 624, "#F4F1FF", C.qwen);
+  stage(4, "兜底与反查", "剪空回退；生成后精确/前缀反查", 894, "#FFF7ED", C.orange);
+  [316, 586, 856].forEach((left) => {
+    text(slide, "→", { left, top: 238, width: 36, height: 30 }, {
+      size: 28,
+      bold: true,
+      color: C.grayText,
       align: "center",
     });
-    if (index < flow.length - 1) {
-      text(slide, "↓", { left: 318, top: y + 54, width: 28, height: 18 }, {
-        size: 15,
-        bold: true,
-        color: "#1677FF",
-        align: "center",
-      });
-    }
   });
 
-  shape(slide, "roundRect", { left: 650, top: 196, width: 554, height: 438 }, {
+  shape(slide, "roundRect", { left: 84, top: 342, width: 520, height: 238 }, {
     fill: "#FFFFFF",
-    line: { style: "solid", fill: C.green, width: 1.8 },
+    line: { style: "solid", fill: "#D7E8F7", width: 1.2 },
     shadow: "shadow-sm",
+    borderRadius: "rounded-lg",
   });
-  shape(slide, "ellipse", { left: 668, top: 214, width: 38, height: 38 }, {
-    fill: C.green,
-    line: noLine(),
-  });
-  text(slide, "3", { left: 668, top: 223, width: 38, height: 20 }, {
-    size: 15,
+  text(slide, "LogitsProcessor：每步解码的判断顺序", { left: 110, top: 362, width: 360, height: 24 }, {
+    size: 18,
     bold: true,
-    color: "#FFFFFF",
-    align: "center",
+    color: C.qwen,
   });
-  text(slide, "LogitsProcessor 决策细节", { left: 720, top: 222, width: 360, height: 26 }, {
-    size: 22,
-    bold: true,
-    color: C.green,
+  const decision = [
+    ["lookback", "最近 64 token 内找到 <|item_begin|>"],
+    ["parse", "拆出 prefix_ids 与 code_tokens"],
+    ["validate", "校验 code 层级连续，得到当前 k"],
+    ["lookup", "按 (label_id, code_prefix) 查询 allowed_next"],
+    ["mask", "保留 level_base[k]+code，其余 logits 置 -inf"],
+  ];
+  decision.forEach(([title, body], index) => {
+    const top = 404 + index * 32;
+    shape(slide, "roundRect", { left: 112, top, width: 86, height: 22 }, {
+      fill: index === 3 ? "#F0FFF6" : "#EEF6FF",
+      line: { style: "solid", fill: "#BDE0FF", width: 1 },
+      borderRadius: "rounded-md",
+    });
+    text(slide, title, { left: 112, top: top + 5, width: 86, height: 10 }, {
+      size: 9,
+      bold: true,
+      color: index === 3 ? C.green : "#1677FF",
+      align: "center",
+    });
+    text(slide, body, { left: 216, top: top + 4, width: 310, height: 14 }, {
+      size: 10,
+      color: C.body,
+    });
   });
 
-  const decision = [
-    ["① 定位 SID 块", "lookback 64 token 内找最近 <|item_begin|>", "#EEF6FF", "#1677FF"],
-    ["② 解析标签与层级", "拆出 prefix_ids 与 code_tokens，校验层级连续", "#FFFFFF", C.ink],
-    ["③ 查询 allowed_next", "按 (label_id, code_prefix) 找合法下一层 code", "#F0FFF6", C.green],
-    ["④ 可选去重剪枝", "已生成 SID 子树优先剪掉；剪空回退 allowed", "#FFF7ED", C.orange],
-    ["⑤ 写回 logits mask", "保留 token id，其余全部置为 -inf", "#EEF6FF", "#1677FF"],
+  shape(slide, "roundRect", { left: 640, top: 342, width: 556, height: 238 }, {
+    fill: "#F8FBFF",
+    line: { style: "solid", fill: "#D7E8F7", width: 1.2 },
+    shadow: "shadow-sm",
+    borderRadius: "rounded-lg",
+  });
+  text(slide, "两类保护：只在该约束时约束，约束不了就放行", { left: 666, top: 362, width: 430, height: 24 }, {
+    size: 18,
+    bold: true,
+    color: C.qwen,
+  });
+  const guardCards = [
+    ["任务级路由", "text2sid：完整物品库\nI2I：优质题库\n普通对话：不注入", "#EEF6FF", "#1677FF"],
+    ["去重软约束", "收集已生成完整 SID\n子树已吐尽才剪枝\n剪空则回退 allowed", "#F0FFF6", C.green],
+    ["生成后兜底", "精确反查优先\n前缀回退兜底\n仍未命中则剔除", "#FFF7ED", C.orange],
   ];
-  decision.forEach(([title, body, fill, color], index) => {
-    const y = 280 + index * 54;
-    shape(slide, "roundRect", { left: 720, top: y, width: 408, height: 42 }, {
+  guardCards.forEach(([title, body, fill, color], index) => {
+    const left = 668 + index * 168;
+    shape(slide, "roundRect", { left, top: 410, width: 148, height: 112 }, {
       fill,
-      line: { style: "solid", fill: index === 3 ? "#FDBA74" : "#BDE0FF", width: 1 },
+      line: { style: "solid", fill: color, width: 1 },
+      borderRadius: "rounded-lg",
     });
-    text(slide, title, { left: 740, top: y + 7, width: 142, height: 16 }, {
+    text(slide, title, { left: left + 12, top: 426, width: 124, height: 18 }, {
       size: 13,
       bold: true,
       color,
+      align: "center",
     });
-    text(slide, body, { left: 890, top: y + 7, width: 212, height: 26 }, {
+    text(slide, body, { left: left + 14, top: 456, width: 120, height: 48 }, {
       size: 10,
       color: C.body,
       align: "center",
     });
   });
 
-  shape(slide, "roundRect", { left: 716, top: 566, width: 420, height: 44 }, {
-    fill: "#F0FFF6",
-    line: { style: "solid", fill: "#A7F3D0", width: 1 },
+  shape(slide, "roundRect", { left: 176, top: 608, width: 928, height: 44 }, {
+    fill: "#F0EEFF",
+    line: { style: "solid", fill: "#CFC9FF", width: 1 },
+    shadow: "shadow-sm",
+    borderRadius: "rounded-full",
   });
-  text(slide, "原则：mask 保合法性；temperature/top-p 保多样性；去重是软约束，剪空就回退。", {
-    left: 738,
-    top: 580,
-    width: 376,
-    height: 16,
+  text(slide, "解释口径：限制性解码保证 SID 合法性；temperature/top-p 仍负责多样性；去重与反查负责推荐可用性。", {
+    left: 214,
+    top: 620,
+    width: 852,
+    height: 20,
   }, {
-    size: 12,
+    size: 15,
     bold: true,
     color: C.ink,
     align: "center",

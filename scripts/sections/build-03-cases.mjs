@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { buildSectionDeck, ROOT, saveSectionDeck } from "../lib/qwen-deck.mjs";
 
 const deck = await buildSectionDeck("03");
@@ -428,45 +429,86 @@ function addComparePlaceholder(slideNo) {
   };
 }
 
+function addCaseHtmlLink(slideNo, htmlPath) {
+  const slide = deck.slides.items[slideNo - 1];
+  const link = slide.shapes.add({
+    geometry: "textbox",
+    position: { left: 1088, top: 140, width: 108, height: 18 },
+    fill: "none",
+    line: noLine(),
+  });
+  link.text = "查看 HTML";
+  link.text.style = {
+    fontSize: 12,
+    bold: true,
+    color: "#635BFF",
+    typeface: "PingFang SC",
+    alignment: "right",
+    wrap: "square",
+    insets: { left: 0, right: 0, top: 0, bottom: 0 },
+  };
+  const range = link.text.get("查看 HTML");
+  range.link = {
+    uri: pathToFileURL(htmlPath).href,
+    isExternal: true,
+  };
+  range.underline = "sng";
+}
+
+function addCaseHtmlLinks() {
+  const caseDir = path.resolve(ROOT, "..", "I2I case");
+  const links = [
+    [4, "题目推荐能力 case 1.html"],
+    [5, "题目推荐能力 case 2.html"],
+    [6, "异构类型推荐能力 case 1.html"],
+    [7, "异构类型推荐能力 case 2.html"],
+    [8, "搜索能力 case 1.html"],
+    [9, "搜索能力 case 2.html"],
+  ];
+  for (const [slideNo, filename] of links) {
+    addCaseHtmlLink(slideNo, path.join(caseDir, filename));
+  }
+}
+
 await replaceExactText("能力差异点 | Demo Case | 质量验证", "产出沉淀 | Demo Case | 评估闭环", {
   slide: 1,
 });
 
-await replaceExactText("工作产出与案例 | 五个差异点", "工作产出与案例 | 五类可复用产出", {
+await replaceExactText("工作产出与案例 | 五个差异点", "工作产出与案例 | 亮点&差异点", {
   slide: 2,
 });
 await replaceExactText("异构 Item 统一表征", "异构 Item 统一表征", { slide: 2 });
 await replaceExactText(
   "题目、试卷、视频、小讲堂进入同一词表空间",
-  "统一题目、试卷、视频、小讲堂的 SID 与语义空间",
+  "文本标签 + SID 双通道编码；统一题目、试卷、视频、小讲堂，支撑类型感知检索与跨类型推荐",
   { slide: 2 },
 );
-await replaceExactText("通用能力保持", "训练链路抗遗忘", { slide: 2 });
+await replaceExactText("通用能力保持", "全流程通用能力保持", { slide: 2 });
 await replaceExactText(
   "两阶段预训练 + SFT 通用数据混合",
-  "两阶段 CPT + SFT 混合通用数据，保留通用能力与 SID 对齐",
+  "两阶段 CPT + SFT 混合通用数据；完成 SID 语义注入，同时保留对话、推理与指令遵循能力",
   { slide: 2 },
 );
-await replaceExactText("多源协同数据挖掘", "冷启动监督构造", { slide: 2 });
+await replaceExactText("多源协同数据挖掘", "多源协同数据挖掘", { slide: 2 });
 await replaceExactText(
   "共现、语义近邻、教师推理链共同补足冷启动监督",
-  "共现、语义近邻、教师推理链共同生成可训练样本",
+  "融合共现、embedding 近邻和教师推理链；在无行为日志场景下构造蒸馏样本与协同知识",
   { slide: 2 },
 );
-await replaceExactText("约束解码优化", "任务级约束解码", { slide: 2 });
+await replaceExactText("约束解码优化", "任务级 SID 空间定制", { slide: 2 });
 await replaceExactText(
   "按任务裁剪 SID 空间，保证合法且减少重复",
-  "按题目、搜索、异构场景裁剪 SID，减少非法与重复输出",
+  "按题目、搜索、异构任务裁剪候选 SID；减少非法与重复输出，保证结果映射真实在库 Item",
   { slide: 2 },
 );
 await replaceExactText(
   "覆盖语义 ID、通用能力、物品理解和推荐效果",
-  "覆盖 SID 合法性、通用能力、Item 理解与推荐质量",
+  "覆盖 SID 合法性、通用能力、Item 理解与推荐质量；支撑训练到应用的快速回归与迭代决策",
   { slide: 2 },
 );
 addSlideNote(
   deck.slides.items[1],
-  "核心产出：把教育 OneRec 从模型能力验证推进到可训练、可约束、可评估的链路资产。",
+  "核心产出：把教育 OneRec 从模型能力验证推进到可训练、可约束、可评估，并可支撑多形态资源协同分发的链路资产。",
 );
 
 await replaceExactText(
@@ -545,7 +587,7 @@ await replaceExactText(
   "工作产出与案例 | 异构推荐 Case 2",
   { slide: 7 },
 );
-await replaceExactText("同主题跨类型补充学习资源", "锚点题目 -> 跨类型资源推荐——试卷/视频", { slide: 7 });
+await replaceExactText("同主题跨类型补充学习资源", "锚点题目 -> 跨类型资源推荐——小讲堂", { slide: 7 });
 await replaceExactText("case 结论", "评价", { slide: 7 });
 await replaceExactText(
   "模型不只召回题目，也能组织视频、小讲堂等延伸学习内容。",
@@ -585,5 +627,6 @@ await repairCompareScreenshots();
 applyCaseLayouts();
 addComparePlaceholder(6);
 addComparePlaceholder(7);
+addCaseHtmlLinks();
 
 await saveSectionDeck("03", deck);
