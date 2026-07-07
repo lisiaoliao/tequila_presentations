@@ -1,0 +1,9 @@
+{
+  "name": "tequila-presentations",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bootstrap:codex": "node scripts/bootstrap-codex-runtime.mjs",
+    "build:qwen": "node scripts/build-qwen-defense.mjs"
+  }
+}
