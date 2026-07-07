@@ -200,23 +200,47 @@ async function addImageToSlide(slideNo, imagePath, frame) {
 }
 
 async function repairOutputScreenshots() {
-  await replaceImageInBox(
-    4,
-    path.join(CASE_OUTPUT_CROP_DIR, "case08_output_screenshot.png"),
-    { left: 410, top: 196, width: 370, height: 384 },
-    { left: 410, top: 196, width: 370, height: 384 },
-    { alt: "输出截图" },
-  );
+  const hasCompareBox = { left: 410, top: 196, width: 370, height: 384 };
+  const noCompareBox = { left: 374, top: 196, width: 400, height: 384 };
+  const replacements = [
+    [4, "case08_output_screenshot.png", hasCompareBox],
+    [5, "case09_output_from_html.png", hasCompareBox],
+    [6, "case10_output_from_html.png", noCompareBox],
+    [7, "case11_output_from_html.png", noCompareBox],
+    [8, "case12_output_from_html.png", hasCompareBox],
+    [9, "case13_output_from_html.png", hasCompareBox],
+  ];
+  for (const [slideNo, filename, box] of replacements) {
+    await replaceImageInBox(
+      slideNo,
+      path.join(CASE_OUTPUT_CROP_DIR, filename),
+      box,
+      box,
+      { alt: "输出截图" },
+    );
+  }
 }
 
 async function repairJudgeScreenshots() {
-  await replaceImageInBox(
-    4,
-    path.join(CASE_JUDGE_CROP_DIR, "case08_judge_from_html.png"),
-    { left: 806, top: 196, width: 390, height: 384 },
-    { left: 806, top: 196, width: 390, height: 384 },
-    { alt: "LLM-Judge 评分截图" },
-  );
+  const hasCompareBox = { left: 806, top: 196, width: 390, height: 384 };
+  const noCompareBox = { left: 794, top: 196, width: 402, height: 384 };
+  const replacements = [
+    [4, "case08_judge_from_html.png", hasCompareBox],
+    [5, "case09_judge_from_html.png", hasCompareBox],
+    [6, "case10_judge_from_html.png", noCompareBox],
+    [7, "case11_judge_from_html.png", noCompareBox],
+    [8, "case12_judge_from_html.png", hasCompareBox],
+    [9, "case13_judge_from_html.png", hasCompareBox],
+  ];
+  for (const [slideNo, filename, box] of replacements) {
+    await replaceImageInBox(
+      slideNo,
+      path.join(CASE_JUDGE_CROP_DIR, filename),
+      box,
+      box,
+      { alt: "LLM-Judge 评分截图" },
+    );
+  }
 }
 
 async function repairCompareScreenshots() {
@@ -273,11 +297,21 @@ function applyCaseLayout(slideNo, { hasCompare }) {
     judgeLabel: { left: 864, top: 170, width: 376, height: 18 },
     judgeCard: { left: 864, top: 196, width: 376, height: 420 },
     judgeImageFrame: { left: 876, top: 206, width: 352, height: 400 },
-    conclusionBox: { left: 864, top: 616, width: 376, height: 44 },
-    conclusionBar: { left: 865, top: 617, width: 374, height: 4 },
-    conclusionLabel: { left: 878, top: 630, width: 50, height: 18 },
-    conclusionText: { left: 932, top: 623, width: 294, height: 34 },
+    conclusionBox: { left: 864, top: 628, width: 376, height: 44 },
+    conclusionBar: { left: 865, top: 629, width: 374, height: 4 },
+    conclusionLabel: { left: 878, top: 642, width: 50, height: 18 },
+    conclusionText: { left: 932, top: 635, width: 294, height: 34 },
   };
+
+  if (slideNo === 8 || slideNo === 9) {
+    Object.assign(layout, {
+      inputCard: { left: 76, top: 196, width: 208, height: 58 },
+      inputText: { left: 86, top: 212, width: 188, height: 24 },
+      compareLabel: { left: 76, top: 270, width: 208, height: 18 },
+      compareCard: { left: 76, top: 296, width: 208, height: 202 },
+      compareImageFrame: { left: 78, top: 300, width: 204, height: 194 },
+    });
+  }
 
   moveTextByValue(slide, "输入", layout.inputLabel);
   moveShape(blankShapeInBox(slide, oldInput), layout.inputCard);
@@ -348,6 +382,50 @@ function applyCaseLayouts() {
   for (const slideNo of [6, 7]) {
     applyCaseLayout(slideNo, { hasCompare: false });
   }
+}
+
+function addComparePlaceholder(slideNo) {
+  const slide = deck.slides.items[slideNo - 1];
+  const label = slide.shapes.add({
+    geometry: "textbox",
+    position: { left: 76, top: 378, width: 208, height: 18 },
+    fill: "none",
+    line: noLine(),
+  });
+  label.text = "对比场景";
+  label.text.style = {
+    fontSize: 16,
+    bold: true,
+    color: "#635BFF",
+    typeface: "PingFang SC",
+    alignment: "center",
+    wrap: "square",
+    insets: { left: 0, right: 0, top: 0, bottom: 0 },
+  };
+
+  slide.shapes.add({
+    geometry: "rect",
+    position: { left: 76, top: 404, width: 208, height: 256 },
+    fill: "#FFFFFF",
+    line: { style: "solid", fill: "#BCE3FF", width: 1.2 },
+  });
+
+  const empty = slide.shapes.add({
+    geometry: "textbox",
+    position: { left: 76, top: 514, width: 208, height: 28 },
+    fill: "none",
+    line: noLine(),
+  });
+  empty.text = "暂无";
+  empty.text.style = {
+    fontSize: 20,
+    bold: true,
+    color: "#8A93A8",
+    typeface: "PingFang SC",
+    alignment: "center",
+    wrap: "square",
+    insets: { left: 0, right: 0, top: 0, bottom: 0 },
+  };
 }
 
 await replaceExactText("能力差异点 | Demo Case | 质量验证", "产出沉淀 | Demo Case | 评估闭环", {
@@ -426,26 +504,26 @@ await replaceExactText("工作产出与案例 | 题目推荐能力 case 1", "工
 });
 await replaceExactText(
   "质量守恒定律：推荐同知识点、同判据题目",
-  "性质决定用途：推荐同判据生活应用题",
+  "锚点题目 -> 同判据题目推荐",
   { slide: 4 },
 );
 await replaceExactText("case 结论", "评价", { slide: 4 });
 await replaceExactText(
   "推荐结果能围绕守恒定律给出迁移理由，并通过 Judge 验证关联质量。",
-  "模型能围绕物质性质与用途给出迁移理由；对比场景仅用向量召回，结果同质化严重。",
+  "锚点题目能迁移到同判据生活应用题；对比仅靠向量召回，结果同质化严重。",
   { slide: 4 },
 );
 
 await replaceExactText("工作产出与案例 | 题目推荐能力 case 2", "工作产出与案例 | 题目推荐 Case 2", {
   slide: 5,
 });
-await replaceExactText("古诗意象判断：对比场景暴露无关科目问题", "生物判断题：对比暴露类型与学科约束边界", {
+await replaceExactText("古诗意象判断：对比场景暴露无关科目问题", "锚点题目 -> 边界题目推荐", {
   slide: 5,
 });
-await replaceExactText("case 结论", "验证点", { slide: 5 });
+await replaceExactText("case 结论", "评价", { slide: 5 });
 await replaceExactText(
   "模型能输出题目推荐与理由，对比场景体现需要更强类型与学科约束。",
-  "模型能生成题目推荐和理由，同时暴露题型、学科与资源类型约束仍需加强。",
+  "锚点题目可生成推荐理由；对比场景向量召回存在阈值边界问题。",
   { slide: 5 },
 );
 
@@ -454,10 +532,11 @@ await replaceExactText(
   "工作产出与案例 | 异构推荐 Case 1",
   { slide: 6 },
 );
-await replaceExactText("case 结论", "验证点", { slide: 6 });
+await replaceExactText("同主题跨类型资源推荐", "锚点题目 -> 跨类型资源推荐——试卷/视频", { slide: 6 });
+await replaceExactText("case 结论", "评价", { slide: 6 });
 await replaceExactText(
   "异构 Item 统一表征后，可以从锚点题目扩展到多形态教育资源。",
-  "统一表征后，模型可从题目锚点扩展到视频、小讲堂等多形态资源。",
+  "锚点题目可迁移到视频、小讲堂等资源，说明 SID 表征能支撑跨类型推荐。",
   { slide: 6 },
 );
 
@@ -466,36 +545,37 @@ await replaceExactText(
   "工作产出与案例 | 异构推荐 Case 2",
   { slide: 7 },
 );
-await replaceExactText("case 结论", "验证点", { slide: 7 });
+await replaceExactText("同主题跨类型补充学习资源", "锚点题目 -> 跨类型资源推荐——试卷/视频", { slide: 7 });
+await replaceExactText("case 结论", "评价", { slide: 7 });
 await replaceExactText(
   "模型不只召回题目，也能组织视频、小讲堂等延伸学习内容。",
-  "验证同一主题下的跨类型补充学习，不局限于题目召回。",
+  "同一锚点可补充多形态学习资源，但需控制主题一致性，避免泛化召回。",
   { slide: 7 },
 );
 
 await replaceExactText("工作产出与案例 | 搜索能力 case 1", "工作产出与案例 | 搜索能力 Case 1", {
   slide: 8,
 });
-await replaceExactText("自然语言需求到教育资源命中", "自然语言需求命中应用题资源", {
+await replaceExactText("自然语言需求到教育资源命中", "自然语言 query -> 题目推荐", {
   slide: 8,
 });
-await replaceExactText("case 结论", "验证点", { slide: 8 });
+await replaceExactText("case 结论", "评价", { slide: 8 });
 await replaceExactText(
   "搜索 case 验证模型在资源理解和结果解释上的端到端能力。",
-  "自然语言查询能命中可学习资源，并给出可解释推荐理由。",
+  "自然语言 query 可直接命中题目资源，并给出可解释推荐理由。",
   { slide: 8 },
 );
 
 await replaceExactText("工作产出与案例 | 搜索能力 case 2", "工作产出与案例 | 搜索能力 Case 2", {
   slide: 9,
 });
-await replaceExactText("自然语言需求到教育资源命中", "自然语言需求命中试卷资源", {
+await replaceExactText("自然语言需求到教育资源命中", "自然语言 query -> 试卷推荐", {
   slide: 9,
 });
-await replaceExactText("case 结论", "验证点", { slide: 9 });
+await replaceExactText("case 结论", "评价", { slide: 9 });
 await replaceExactText(
   "与 Agent 搜题链路相比，生成式路线更适合沉淀为低延迟服务。",
-  "同一查询可返回试卷类资源，搜索能力可沉淀为低延迟服务。",
+  "自然语言 query 可返回试卷资源，适合沉淀为低延迟搜索服务。",
   { slide: 9 },
 );
 
@@ -503,5 +583,7 @@ await repairOutputScreenshots();
 await repairJudgeScreenshots();
 await repairCompareScreenshots();
 applyCaseLayouts();
+addComparePlaceholder(6);
+addComparePlaceholder(7);
 
 await saveSectionDeck("03", deck);

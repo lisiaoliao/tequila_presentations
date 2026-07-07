@@ -97,8 +97,8 @@ function tuneRouteSummary() {
   routeShapes.subtitle.text = "教育推荐/搜索需求占比持续上升，现有路线难以兼顾时效性与可解释性";
   routeShapes.subtitle.position = { left: 106, top: 188, width: 650, height: 24 };
   routeShapes.intro.text =
-    "核心矛盾：Agent 解释强但慢，判别式推荐快但黑盒\n需要第三条路线补齐“时效性 + 可解释性”双目标。";
-  routeShapes.intro.position = { left: 84, top: 236, width: 690, height: 42 };
+    "核心矛盾：Agent 解释强但慢，判别式推荐快但黑盒";
+  routeShapes.intro.position = { left: 84, top: 238, width: 690, height: 28 };
 
   agentCard.position = { left: 84, top: 294, width: 326, height: 142 };
   recCard.position = { left: 424, top: 294, width: 326, height: 142 };
@@ -231,47 +231,47 @@ function tuneGoalAndChallenges() {
     color: "#364157",
   };
 
-  addTextbox(slide, "问题与挑战", { left: 84, top: 286, width: 240, height: 28 }, {
+  addTextbox(slide, "问题与挑战", { left: 84, top: 284, width: 240, height: 28 }, {
     fontSize: 22,
     bold: true,
     color: "#15192F",
   });
 
   const nextCardPositions = [
-    { left: 100, top: 330, width: 500, height: 110 },
-    { left: 656, top: 330, width: 500, height: 110 },
-    { left: 100, top: 464, width: 500, height: 110 },
-    { left: 656, top: 464, width: 500, height: 110 },
+    { left: 100, top: 326, width: 500, height: 120 },
+    { left: 656, top: 326, width: 500, height: 120 },
+    { left: 100, top: 478, width: 500, height: 120 },
+    { left: 656, top: 478, width: 500, height: 120 },
   ];
   const nextTopBars = [
-    { left: 101, top: 331, width: 498, height: 4 },
-    { left: 657, top: 331, width: 498, height: 4 },
-    { left: 101, top: 465, width: 498, height: 4 },
-    { left: 657, top: 465, width: 498, height: 4 },
+    { left: 101, top: 327, width: 498, height: 4 },
+    { left: 657, top: 327, width: 498, height: 4 },
+    { left: 101, top: 479, width: 498, height: 4 },
+    { left: 657, top: 479, width: 498, height: 4 },
   ];
   const nextCircles = [
-    { left: 122, top: 354, width: 44, height: 44 },
-    { left: 678, top: 354, width: 44, height: 44 },
-    { left: 122, top: 488, width: 44, height: 44 },
-    { left: 678, top: 488, width: 44, height: 44 },
+    { left: 122, top: 352, width: 44, height: 44 },
+    { left: 678, top: 352, width: 44, height: 44 },
+    { left: 122, top: 504, width: 44, height: 44 },
+    { left: 678, top: 504, width: 44, height: 44 },
   ];
   const nextNumberPositions = [
-    { left: 122, top: 364, width: 44, height: 22 },
-    { left: 678, top: 364, width: 44, height: 22 },
-    { left: 122, top: 498, width: 44, height: 22 },
-    { left: 678, top: 498, width: 44, height: 22 },
+    { left: 122, top: 362, width: 44, height: 22 },
+    { left: 678, top: 362, width: 44, height: 22 },
+    { left: 122, top: 514, width: 44, height: 22 },
+    { left: 678, top: 514, width: 44, height: 22 },
   ];
   const nextTitlePositions = [
-    { left: 184, top: 350, width: 380, height: 24 },
-    { left: 740, top: 350, width: 380, height: 24 },
-    { left: 184, top: 484, width: 380, height: 24 },
-    { left: 740, top: 484, width: 380, height: 24 },
+    { left: 184, top: 348, width: 380, height: 24 },
+    { left: 740, top: 348, width: 380, height: 24 },
+    { left: 184, top: 500, width: 380, height: 24 },
+    { left: 740, top: 500, width: 380, height: 24 },
   ];
   const nextBodyPositions = [
-    { left: 184, top: 382, width: 370, height: 40 },
-    { left: 740, top: 382, width: 370, height: 40 },
-    { left: 184, top: 516, width: 370, height: 40 },
-    { left: 740, top: 516, width: 370, height: 40 },
+    { left: 184, top: 382, width: 370, height: 46 },
+    { left: 740, top: 382, width: 370, height: 46 },
+    { left: 184, top: 534, width: 370, height: 46 },
+    { left: 740, top: 534, width: 370, height: 46 },
   ];
   const nextTitles = [
     "模型侧｜能力注入与遗忘控制",
@@ -308,13 +308,13 @@ function tuneGoalAndChallenges() {
     };
   }
 
-  coreJudgment.position = { left: 148, top: 622, width: 980, height: 28 };
-  coreJudgment.text = "核心判断：目标不是单点推荐模型，而是可训练、可隔离、可评估、可增量更新的统一能力底座。";
+  coreJudgment.text = "";
 }
 
 const sourceAlignedEdits = [
   [1, "优化背景 | 问题与挑战 | 优化方案", "优化背景 | 总体目标 | 问题与挑战"],
   [2, "业务需要探索第三条技术路线", "推荐/搜索成为核心交互，需要补齐两类路线的短板"],
+  [2, "背景与目标 | 为什么需要第三条路线", "背景与目标 | 为什么需要 OneRec"],
   [2, "现有两条技术路线的结构性短板：", "现有两条技术路线各有优势，但都难以同时满足业务要求："],
   [
     2,

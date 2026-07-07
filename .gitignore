@@ -2,5 +2,6 @@ node_modules/
 .DS_Store
 ~$*.pptx
 *.inspect.ndjson
+inspect.ndjson
 output/rendered/
 output/rendered_montage.png

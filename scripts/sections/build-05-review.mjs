@@ -177,7 +177,7 @@ async function refineSummarySlide() {
   await image(slide, pipelineImage, { left: 70, top: 404, width: 1080, height: 302 }, "教育 OneRec 基座模型训练 pipeline");
 }
 
-async function addAppendixSlide({ marker, title, imageFile, imagePosition, imageAlt, footer }) {
+async function addAppendixSlide({ marker, title, imageFile, imagePosition, imageAlt }) {
   const slide = deck.slides.add();
   shape(slide, "rect", { left: 0, top: 0, width: 1280, height: 720 }, { fill: "#FFFFFF" });
   shape(slide, "ellipse", { left: 50, top: 32, width: 64, height: 64 }, {
@@ -213,24 +213,7 @@ async function addAppendixSlide({ marker, title, imageFile, imagePosition, image
     size: 11,
     color: "#667085",
   });
-  shape(slide, "rect", {
-    left: imagePosition.left - 8,
-    top: imagePosition.top - 8,
-    width: imagePosition.width + 16,
-    height: imagePosition.height + 16,
-  }, {
-    fill: "#FFFFFF",
-    line: { style: "solid", fill: "#D8EDFF", width: 1.1 },
-  });
   await image(slide, imageFile, imagePosition, imageAlt);
-  if (footer) {
-    text(slide, footer, { left: 96, top: 656, width: 1088, height: 28 }, {
-      size: 18,
-      bold: true,
-      color: "#14113D",
-      align: "center",
-    });
-  }
   return slide;
 }
 
@@ -263,7 +246,6 @@ async function addReadableAppendixSlides() {
     imageFile: md("img36_u51a9ff4d.png"),
     imagePosition: { left: 84, top: 150, width: 1112, height: 501 },
     imageAlt: "I2I 结构化合规性定义表",
-    footer: "评估口径与训练目标保持一致：结构先合规，再看语义关联和理由忠实度。",
   });
   await addAppendixSlide({
     marker: "A5",
@@ -271,7 +253,6 @@ async function addReadableAppendixSlides() {
     imageFile: md("img37_u0b327924.png"),
     imagePosition: { left: 356, top: 136, width: 568, height: 492 },
     imageAlt: "LLM-Judge 维度定义表",
-    footer: "关联效度与理由忠实度分开判：文案漂亮不等于关联强。",
   });
 }
 
@@ -287,7 +268,7 @@ function moveAppendixAfterThanks() {
 
 replaceExactText(1, "效果与复盘", "思考与总结");
 replaceExactText(1, "指标收益 | 问题沉淀 | 后续方向", "问题沉淀 | 经验反思 | 后续方向");
-replaceExactText(2, "效果与复盘 | 问题、反思和后续方向", "思考与总结 | 问题、反思和后续方向");
+replaceExactText(2, "效果与复盘 | 问题、反思和后续方向", "思考与总结");
 await refineSummarySlide();
 deleteObjectsInBox(3, { left: 80, top: 320, width: 340, height: 155 });
 deleteObjectsInBox(3, { left: 1000, top: 320, width: 205, height: 155 });

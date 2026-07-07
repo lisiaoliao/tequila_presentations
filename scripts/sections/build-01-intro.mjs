@@ -74,7 +74,7 @@ function refineAgenda(slide) {
   const circleLeft = 313;
   const barLeft = 381;
   const barWidth = 586;
-  const firstTop = 160;
+  const firstTop = 176;
   const rowGap = 88;
 
   agenda.forEach((label, index) => {
@@ -148,33 +148,34 @@ async function refinePersonalTimeline(slide) {
   const dotSize = 30;
   const firstY = 248;
   const rowGap = 92;
-  shape(slide, "rect", { left: lineX, top: 238, width: 2, height: 328 }, { fill: C.line });
+  shape(slide, "rect", { left: lineX, top: 220, width: 2, height: 370 }, { fill: C.line });
 
   const events = [
     {
       logo: rucLogo,
-      logoBox: { left: 206, width: 62, height: 62 },
+      logoBox: { left: 222, width: 68, height: 68 },
       date: "2018.09–2024.06",
       org: "中国人民大学统计学院",
       work: "本硕",
     },
     {
       logo: tencentAdsLogo,
-      logoBox: { left: 160, width: 152, height: 29 },
+      logoBox: { left: 182, width: 166, height: 32 },
+      logoCenterY: firstY + rowGap * 1.5 + 20,
       date: "2024.07–2025.03",
       org: "腾讯广告 —— 流量支持中心",
       work: "广告业务问题全链路策略优化",
     },
     {
-      logo: tencentAdsLogo,
-      logoBox: { left: 160, width: 152, height: 29 },
+      logo: null,
+      logoBox: { left: 182, width: 166, height: 32 },
       date: "2025.04–2026.03",
       org: "腾讯广告 —— AI 推荐中心",
       work: "生成式推荐与大模型广告落地",
     },
     {
       logo: qwenLogo,
-      logoBox: { left: 210, width: 56, height: 56 },
+      logoBox: { left: 224, width: 64, height: 64 },
       date: "2026.04–至今",
       org: "阿里千问 —— 学习创新",
       work: "教育 OneRec 探索",
@@ -187,7 +188,7 @@ async function refinePersonalTimeline(slide) {
     const dotCenterY = y + 20;
     event.logoPosition = {
       left: event.logoBox.left,
-      top: dotCenterY - event.logoBox.height / 2,
+      top: (event.logoCenterY ?? dotCenterY) - event.logoBox.height / 2,
       width: event.logoBox.width,
       height: event.logoBox.height,
     };
@@ -196,21 +197,23 @@ async function refinePersonalTimeline(slide) {
       line: { style: "solid", fill: event.active ? C.qwen : C.blue, width: 3 },
     });
     text(slide, event.date, { left: 460, top: y - 1, width: 205, height: 34 }, {
+      size: 22,
+      color: C.ink,
+    });
+    text(slide, event.org, { left: 690, top: y - 9, width: 540, height: 26 }, {
       size: 20,
       color: C.ink,
     });
-    text(slide, event.org, { left: 690, top: y - 7, width: 540, height: 24 }, {
-      size: 18,
-      color: C.ink,
-    });
-    text(slide, event.work, { left: 690, top: y + 19, width: 540, height: 24 }, {
-      size: 16,
+    text(slide, event.work, { left: 690, top: y + 20, width: 540, height: 25 }, {
+      size: 17,
       color: C.ink,
     });
   });
 
   for (const event of events) {
-    await image(slide, event.logo, event.logoPosition, "timeline logo");
+    if (event.logo) {
+      await image(slide, event.logo, event.logoPosition, "timeline logo");
+    }
   }
 }
 
