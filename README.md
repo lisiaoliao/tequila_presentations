@@ -16,25 +16,43 @@
 - `output/转正答辩_千问模板.pptx`：当前可直接打开的生成结果。
 - `preview/`：运行脚本后导出的每页 PNG 与总览图，便于快速检查排版。
 
+## 内容基准
+
+以下两个文件是本项目的内容与叙事基准，所有修改、美化、拆页、增删文案、案例展示和图表调整都必须以它们为准：
+
+- `/Users/aoliao/Desktop/工作/转正答辩/转正答辩.md`
+- `/Users/aoliao/Desktop/工作/转正答辩/转正答辩.pdf`
+
+其他 agent 修改某个 section 前，必须先对照这两个文件确认本章节的叙事线、图片、case 和关键信息，不要只根据当前 PPT 猜测内容。
+
 ## 快速运行
 
-完整生成最终版：
+安全生成所有 section，不覆盖最终 PPT：
 
 ```bash
-npm run build:qwen
+npm run build:sections
 ```
 
-默认输出：
+每个 section 会输出到：
+
+```text
+output/sections/*.pptx
+preview/sections/*/
+```
+
+如需生成不覆盖正式文件的检查版，可以指定临时输出：
+
+```bash
+PPTX_OUT=output/检查版.pptx npm run combine:qwen
+```
+
+正式输出路径是：
 
 ```text
 output/转正答辩_千问模板.pptx
 ```
 
-可通过环境变量指定最终输出位置：
-
-```bash
-PPTX_OUT=/path/to/deck.pptx npm run build:qwen
-```
+默认禁止覆盖这个文件，只有奥哩奥确认满意后才能执行正式合并。
 
 ## 并行修改方式
 
@@ -50,10 +68,26 @@ PPTX_OUT=/path/to/deck.pptx npm run build:qwen
 
 单个线程修改时，只在对应脚本里的 `Section-specific edits ... go here` 注释下面加本章节逻辑，不要改其他 section 脚本。改完后先运行自己的命令检查局部 PPT。
 
-5 个线程都完成后，执行：
+每个 agent 完成自己负责的 section 后，必须在回复中展示对应 section 的 PPTX，方便奥哩奥直接检查，不要只描述“已完成”。展示格式示例：
+
+```text
+::codex-file-citation{path="/Users/aoliao/Desktop/工作/转正答辩/tequila_presentations/output/sections/03-工作产出与案例.pptx" artifact_kind="presentation" slide_number="1"}
+```
+
+也可以同时给出对应预览目录，例如 `preview/sections/03-cases/deck-montage.webp`，但不能替代 PPTX 展示。
+
+## 合并保护规则
+
+没有奥哩奥明确允许，不准执行会覆盖 `output/转正答辩_千问模板.pptx` 的命令。各线程只能先生成自己的 section，并检查：
+
+- `output/sections/<章节>.pptx`
+- `preview/sections/<章节>/deck-montage.webp`
+- `preview/sections/<章节>/slide-*.png`
+
+等奥哩奥确认所有 section 都满意后，再执行正式合并：
 
 ```bash
-npm run combine:qwen
+ALLOW_FINAL_OVERWRITE=1 npm run combine:qwen
 ```
 
 这个命令会读取 `output/sections/*.pptx`，按 01 到 05 的顺序合并成最终版。合并器不会回退到基准 PPT，也不会重新生成页面布局；它会把每个 section PPTX 里的页面、图片和依赖资源原样拼进最终 PPT，所以各线程改完并运行本章节命令后，结果会同步进入最终合并版：
@@ -65,7 +99,7 @@ output/转正答辩_千问模板.pptx
 如果希望从零开始完整生成所有 section 并合并，执行：
 
 ```bash
-npm run build:qwen
+ALLOW_FINAL_OVERWRITE=1 npm run build:qwen
 ```
 
 如果只想重新生成所有 section，不合并，执行：
@@ -73,6 +107,16 @@ npm run build:qwen
 ```bash
 npm run build:sections
 ```
+
+## Codex 中展示 PPTX
+
+最终回复里展示 PPTX 时，优先引用正式文件本身，不要为了让 Codex 展示而重新导出并覆盖正式 PPT：
+
+```text
+::codex-file-citation{path="/Users/aoliao/Desktop/工作/转正答辩/tequila_presentations/output/转正答辩_千问模板.pptx" artifact_kind="presentation" slide_number="1"}
+```
+
+如果 Codex 没有渲染展示卡片，先检查 `preview/slide-*.png` 和 PowerPoint 打开效果；不要擅自把 `output/转正答辩_千问模板.pptx` 替换成其他版本。
 
 ## 可编辑重建脚本
 

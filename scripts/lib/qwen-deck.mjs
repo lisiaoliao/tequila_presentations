@@ -19,6 +19,7 @@ export const SECTION_PREVIEW_DIR = path.join(PREVIEW_DIR, "sections");
 export const FINAL_OUT = process.env.PPTX_OUT
   ? path.resolve(process.env.PPTX_OUT)
   : path.join(OUTPUT_DIR, "转正答辩_千问模板.pptx");
+export const DEFAULT_FINAL_OUT = path.join(OUTPUT_DIR, "转正答辩_千问模板.pptx");
 
 export const SECTION_CONFIGS = [
   {
@@ -270,7 +271,21 @@ export async function saveSectionDeck(sectionId, presentation) {
   return outPath;
 }
 
+function assertFinalOverwriteAllowed(outPath) {
+  const writesDefaultFinal = path.resolve(outPath) === path.resolve(DEFAULT_FINAL_OUT);
+  if (writesDefaultFinal && process.env.ALLOW_FINAL_OVERWRITE !== "1") {
+    throw new Error(
+      [
+        "Refusing to overwrite output/转正答辩_千问模板.pptx without user approval.",
+        "先让奥哩奥确认各 section 局部 PPT 和 preview/sections 预览都满意。",
+        "确认后再执行: ALLOW_FINAL_OVERWRITE=1 npm run combine:qwen",
+      ].join("\n"),
+    );
+  }
+}
+
 export async function combineSectionDecks(sectionIds = SECTION_CONFIGS.map((item) => item.id), outPath = FINAL_OUT) {
+  assertFinalOverwriteAllowed(outPath);
   const paths = sectionIds.map(sectionOutputPath);
   await mergePptxPackages(paths, outPath);
   try {
