@@ -4,6 +4,13 @@
   "type": "module",
   "scripts": {
     "bootstrap:codex": "node scripts/bootstrap-codex-runtime.mjs",
+    "build:section:01": "node scripts/sections/build-01-intro.mjs",
+    "build:section:02": "node scripts/sections/build-02-background.mjs",
+    "build:section:03": "node scripts/sections/build-03-cases.mjs",
+    "build:section:04": "node scripts/sections/build-04-main-work.mjs",
+    "build:section:05": "node scripts/sections/build-05-review.mjs",
+    "build:sections": "node scripts/build-sections.mjs",
+    "combine:qwen": "node scripts/combine-sections.mjs",
     "build:qwen": "node scripts/build-qwen-defense.mjs",
     "build:qwen:editable": "node scripts/build-qwen-defense-editable.mjs"
   }
