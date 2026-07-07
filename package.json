@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "bootstrap:codex": "node scripts/bootstrap-codex-runtime.mjs",
-    "build:qwen": "node scripts/build-qwen-defense.mjs"
+    "build:qwen": "node scripts/build-qwen-defense.mjs",
+    "build:qwen:editable": "node scripts/build-qwen-defense-editable.mjs"
   }
 }
