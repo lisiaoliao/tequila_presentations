@@ -163,6 +163,20 @@ function moveTextByValue(slide, value, position) {
   return shape;
 }
 
+function nudgeTextByValues(slideNo, values, dy) {
+  const slide = deck.slides.items[slideNo - 1];
+  for (const value of values) {
+    const shape = slide.shapes.items.find((item) => String(item.text ?? "") === value);
+    if (!shape) {
+      throw new Error(`Text not found on slide ${slideNo}: ${value}`);
+    }
+    shape.position = {
+      ...shape.position,
+      top: (shape.position?.top ?? 0) + dy,
+    };
+  }
+}
+
 async function replaceImageInBox(slideNo, imagePath, box, frame = box, { alt = "对比场景截图" } = {}) {
   const slide = deck.slides.items[slideNo - 1];
   const image = firstImageInBox(slide, box);
@@ -389,7 +403,7 @@ function addComparePlaceholder(slideNo) {
   const slide = deck.slides.items[slideNo - 1];
   const label = slide.shapes.add({
     geometry: "textbox",
-    position: { left: 76, top: 378, width: 208, height: 18 },
+    position: { left: 76, top: 390, width: 208, height: 18 },
     fill: "none",
     line: noLine(),
   });
@@ -405,15 +419,16 @@ function addComparePlaceholder(slideNo) {
   };
 
   slide.shapes.add({
-    geometry: "rect",
-    position: { left: 76, top: 404, width: 208, height: 256 },
+    geometry: "roundRect",
+    position: { left: 76, top: 418, width: 208, height: 230 },
     fill: "#FFFFFF",
     line: { style: "solid", fill: "#BCE3FF", width: 1.2 },
+    borderRadius: 8,
   });
 
   const empty = slide.shapes.add({
     geometry: "textbox",
-    position: { left: 76, top: 514, width: 208, height: 28 },
+    position: { left: 76, top: 519, width: 208, height: 28 },
     fill: "none",
     line: noLine(),
   });
@@ -470,6 +485,32 @@ function addCaseHtmlLinks() {
   }
 }
 
+function relabelCompareSources() {
+  const labels = [
+    [4, "夸克错题本举一反三"],
+    [5, "夸克错题本举一反三"],
+    [8, "agent 搜题 skill"],
+    [9, "agent 搜试卷 skill"],
+  ];
+  for (const [slideNo, label] of labels) {
+    const slide = deck.slides.items[slideNo - 1];
+    const shape = slide.shapes.items.find((item) => String(item.text ?? "") === "对比场景");
+    if (!shape) {
+      throw new Error(`Compare label not found on slide ${slideNo}`);
+    }
+    shape.text = label;
+    shape.text.style = {
+      ...shape.text.style,
+      fontSize: label.startsWith("agent") ? 15 : 16,
+      bold: true,
+      color: "#635BFF",
+      alignment: "center",
+      wrap: "square",
+      insets: { left: 0, right: 0, top: 0, bottom: 0 },
+    };
+  }
+}
+
 await replaceExactText("能力差异点 | Demo Case | 质量验证", "产出沉淀 | Demo Case | 评估闭环", {
   slide: 1,
 });
@@ -510,6 +551,17 @@ addSlideNote(
   deck.slides.items[1],
   "核心产出：把教育 OneRec 从模型能力验证推进到可训练、可约束、可评估，并可支撑多形态资源协同分发的链路资产。",
 );
+nudgeTextByValues(
+  2,
+  [
+    "异构 Item 统一表征",
+    "全流程通用能力保持",
+    "多源协同数据挖掘",
+    "任务级 SID 空间定制",
+    "全链路自动化评估",
+  ],
+  6,
+);
 
 await replaceExactText(
   "工作产出与案例 | 覆盖三类核心能力",
@@ -526,6 +578,11 @@ await replaceRepeatedTextOnSlide(
   "case 1 / case 2",
   ["2 个 case：命中 / 边界", "2 个 case：题目 -> 多形态资源", "2 个 case：应用题 / 试卷"],
   { slide: 3 },
+);
+nudgeTextByValues(
+  3,
+  ["题目相似推荐", "异构类型推荐能力", "搜索能力"],
+  8,
 );
 await replaceExactText(
   "围绕同主题跨题目、视频、小讲堂推荐",
@@ -552,7 +609,7 @@ await replaceExactText(
 await replaceExactText("case 结论", "评价", { slide: 4 });
 await replaceExactText(
   "推荐结果能围绕守恒定律给出迁移理由，并通过 Judge 验证关联质量。",
-  "锚点题目能迁移到同判据生活应用题；对比仅靠向量召回，结果同质化严重。",
+  "锚点题目可迁移到同判据应用题；对比场景仅靠语义相似向量召回，同质化严重。",
   { slide: 4 },
 );
 
@@ -604,7 +661,7 @@ await replaceExactText("自然语言需求到教育资源命中", "自然语言 
 await replaceExactText("case 结论", "评价", { slide: 8 });
 await replaceExactText(
   "搜索 case 验证模型在资源理解和结果解释上的端到端能力。",
-  "自然语言 query 可直接命中题目资源，并给出可解释推荐理由。",
+  "自然语言 query 15 秒命中题目资源；对比 agent 搜题 skill 约需 3 分钟。",
   { slide: 8 },
 );
 
@@ -617,7 +674,7 @@ await replaceExactText("自然语言需求到教育资源命中", "自然语言 
 await replaceExactText("case 结论", "评价", { slide: 9 });
 await replaceExactText(
   "与 Agent 搜题链路相比，生成式路线更适合沉淀为低延迟服务。",
-  "自然语言 query 可返回试卷资源，适合沉淀为低延迟搜索服务。",
+  "自然语言 query 15 秒返回试卷资源；对比 agent 搜试卷 skill 约需 3 分钟。",
   { slide: 9 },
 );
 
@@ -628,5 +685,6 @@ applyCaseLayouts();
 addComparePlaceholder(6);
 addComparePlaceholder(7);
 addCaseHtmlLinks();
+relabelCompareSources();
 
 await saveSectionDeck("03", deck);

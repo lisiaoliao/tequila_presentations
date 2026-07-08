@@ -103,13 +103,17 @@ function noLine() {
 }
 
 function shape(slide, geometry, position, opts = {}) {
-  return slide.shapes.add({
+  const config = {
     geometry,
     position,
     fill: opts.fill ?? C.white,
     line: opts.line ?? noLine(),
     shadow: opts.shadow ?? "shadow-none",
-  });
+  };
+  if (opts.radius !== undefined) {
+    config.borderRadius = opts.radius;
+  }
+  return slide.shapes.add(config);
 }
 
 function text(slide, value, position, opts = {}) {
@@ -175,6 +179,77 @@ function dividerSlide(slide, logoBytes, bgBytes, sec, title, subtitle) {
     bold: true,
     color: "#F2F4FF",
   });
+}
+
+function numberInRange(value, min, max) {
+  return Number.isFinite(value) && value >= min && value <= max;
+}
+
+function positionOf(item) {
+  return item.position ?? {};
+}
+
+function isEditableHeaderBar(item) {
+  const p = positionOf(item);
+  return (
+    !String(item.text ?? "") &&
+    numberInRange(p.left, 96, 112) &&
+    numberInRange(p.top, 38, 48) &&
+    numberInRange(p.width, 420, 760) &&
+    numberInRange(p.height, 38, 52)
+  );
+}
+
+function isEditableHeaderText(item) {
+  const value = String(item.text ?? "");
+  const p = positionOf(item);
+  return (
+    value &&
+    numberInRange(p.left, 116, 850) &&
+    numberInRange(p.top, 38, 92) &&
+    numberInRange(p.width, 180, 760) &&
+    numberInRange(p.height, 18, 46)
+  );
+}
+
+export function normalizeHeaderChrome(presentation) {
+  for (const slide of presentation.slides.items) {
+    const bars = slide.shapes.items.filter(isEditableHeaderBar);
+    if (!bars.length) {
+      continue;
+    }
+
+    const headerTexts = slide.shapes.items
+      .filter(isEditableHeaderText)
+      .sort((a, b) => (positionOf(a).left ?? 0) - (positionOf(b).left ?? 0));
+    const title = headerTexts.find((item) => String(item.text ?? "").trim());
+    const titleValue = String(title?.text ?? "").trim();
+    const originalStyle = title?.text?.style ?? {};
+    const bar = bars[0];
+    const originalRight = (bar.position?.left ?? 104) + (bar.position?.width ?? 690);
+    const left = 122;
+    const width = Math.max(420, originalRight - left);
+
+    for (const item of [...bars, ...headerTexts]) {
+      item.delete();
+    }
+
+    shape(slide, "roundRect", { left, top: 42, width, height: 44 }, {
+      fill: C.qwen,
+      line: noLine(),
+      radius: 8,
+    });
+
+    if (titleValue) {
+      text(slide, titleValue, { left: left + 18, top: 49, width: width - 36, height: 28 }, {
+        size: originalStyle.fontSize ?? (titleValue.length > 22 ? 21 : 24),
+        bold: originalStyle.bold ?? true,
+        color: originalStyle.color ?? C.white,
+        align: originalStyle.alignment ?? "center",
+        font: originalStyle.typeface ?? "PingFang SC",
+      });
+    }
+  }
 }
 
 export async function createFullDeck() {
@@ -266,6 +341,7 @@ export async function renderPptxPreview(pptxPath, previewDir) {
 }
 
 export async function saveSectionDeck(sectionId, presentation) {
+  normalizeHeaderChrome(presentation);
   const outPath = sectionOutputPath(sectionId);
   await saveDeck(presentation, outPath, sectionPreviewPath(sectionId));
   console.log(outPath);

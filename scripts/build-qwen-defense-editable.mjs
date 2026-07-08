@@ -188,9 +188,15 @@ function pageChrome(slide, sec, title, topic, page) {
   });
   const heading = topic ? `${title} | ${topic}` : title;
   const width = topic ? 690 : 494;
+  const barLeft = 122;
+  const barWidth = 104 + width - barLeft;
   const size = heading.length > 22 ? 21 : topic ? 24 : 26;
-  shape(slide, "rect", { left: 104, top: 42, width, height: 44 }, { fill: C.qwen, line: noLine() });
-  text(slide, heading, { left: 132, top: 49, width: width - 56, height: 28 }, {
+  shape(slide, "roundRect", { left: barLeft, top: 42, width: barWidth, height: 44 }, {
+    fill: C.qwen,
+    line: noLine(),
+    radius: 8,
+  });
+  text(slide, heading, { left: barLeft + 18, top: 49, width: barWidth - 36, height: 28 }, {
     size,
     bold: true,
     color: C.white,
@@ -315,14 +321,18 @@ function agendaSlide(p) {
   ];
   items.forEach(([no, label, note], i) => {
     const y = 160 + i * 88;
-    shape(slide, "rect", { left: 386, top: y + 9, width: 548, height: 50 }, { fill: C.qwen, line: noLine() });
+    shape(slide, "roundRect", { left: 426, top: y + 9, width: 508, height: 50 }, {
+      fill: C.qwen,
+      line: noLine(),
+      radius: 8,
+    });
     shape(slide, "ellipse", { left: 350, top: y, width: 68, height: 68 }, {
       fill: C.white,
       line: { style: "solid", fill: C.qwen, width: 2 },
       shadow: "shadow-sm",
     });
     text(slide, no, { left: 350, top: y + 13, width: 68, height: 36 }, { size: 31, bold: true, color: C.qwen, align: "center" });
-    text(slide, label, { left: 434, top: y + 21, width: 450, height: 24 }, { size: 23, bold: true, color: C.white, align: "center" });
+    text(slide, label, { left: 456, top: y + 21, width: 448, height: 24 }, { size: 23, bold: true, color: C.white, align: "center" });
     text(slide, note, { left: 954, top: y + 23, width: 250, height: 20 }, { size: 12, color: C.muted });
   });
 }

@@ -20,13 +20,17 @@ function noLine() {
 }
 
 function shape(slide, geometry, position, opts = {}) {
-  return slide.shapes.add({
+  const config = {
     geometry,
     position,
     fill: opts.fill ?? C.white,
     line: opts.line ?? noLine(),
     shadow: opts.shadow ?? "shadow-none",
-  });
+  };
+  if (opts.radius !== undefined) {
+    config.borderRadius = opts.radius;
+  }
+  return slide.shapes.add(config);
 }
 
 function text(slide, value, position, opts = {}) {
@@ -72,8 +76,8 @@ function refineAgenda(slide) {
     "思考与总结",
   ];
   const circleLeft = 313;
-  const barLeft = 381;
-  const barWidth = 586;
+  const barLeft = circleLeft + 76;
+  const barWidth = 967 - barLeft;
   const firstTop = 176;
   const rowGap = 88;
 
@@ -81,7 +85,10 @@ function refineAgenda(slide) {
     const circleTop = firstTop + index * rowGap;
     const barTop = circleTop + 9;
 
-    shape(slide, "rect", { left: barLeft, top: barTop, width: barWidth, height: 50 }, { fill: C.qwen });
+    shape(slide, "roundRect", { left: barLeft, top: barTop, width: barWidth, height: 50 }, {
+      fill: C.qwen,
+      radius: 8,
+    });
     shape(slide, "ellipse", { left: circleLeft, top: circleTop, width: 68, height: 68 }, {
       fill: C.white,
       line: { style: "solid", fill: C.qwen, width: 2 },
@@ -182,31 +189,31 @@ async function refinePersonalTimeline(slide) {
   removeTimelineHeaderSubtitle(slide);
   deleteBodyObjects(slide);
 
-  text(slide, "李思奥（龙舌兰）", { left: 80, top: 148, width: 1120, height: 48 }, {
+  text(slide, "李思奥（龙舌兰）", { left: 110, top: 164, width: 1120, height: 48 }, {
     size: 36,
     bold: true,
     color: C.qwen,
     align: "center",
   });
-  shape(slide, "rect", { left: 565, top: 207, width: 150, height: 4 }, { fill: C.qwen });
+  shape(slide, "rect", { left: 595, top: 223, width: 150, height: 4 }, { fill: C.qwen });
 
-  const lineX = 390;
+  const lineX = 420;
   const dotSize = 30;
-  const firstY = 248;
+  const firstY = 264;
   const rowGap = 92;
-  shape(slide, "rect", { left: lineX, top: 220, width: 2, height: 370 }, { fill: C.line });
+  shape(slide, "rect", { left: lineX, top: 236, width: 2, height: 370 }, { fill: C.line });
 
   const events = [
     {
       logo: rucLogo,
-      logoBox: { left: 222, width: 68, height: 68 },
+      logoBox: { left: 252, width: 68, height: 68 },
       date: "2018.09–2024.06",
       org: "中国人民大学统计学院",
       work: "本硕",
     },
     {
       logo: tencentAdsLogo,
-      logoBox: { left: 182, width: 166, height: 32 },
+      logoBox: { left: 212, width: 166, height: 32 },
       logoCenterY: firstY + rowGap * 1.5 + 20,
       date: "2024.07–2025.03",
       org: "腾讯广告 —— 流量支持中心",
@@ -214,14 +221,14 @@ async function refinePersonalTimeline(slide) {
     },
     {
       logo: null,
-      logoBox: { left: 182, width: 166, height: 32 },
+      logoBox: { left: 212, width: 166, height: 32 },
       date: "2025.04–2026.03",
       org: "腾讯广告 —— AI 推荐中心",
       work: "生成式推荐与大模型广告落地",
     },
     {
       logo: qwenLogo,
-      logoBox: { left: 224, width: 64, height: 64 },
+      logoBox: { left: 254, width: 64, height: 64 },
       date: "2026.04–至今",
       org: "阿里千问 —— 学习创新",
       work: "教育 OneRec 探索",
@@ -242,15 +249,15 @@ async function refinePersonalTimeline(slide) {
       fill: event.active ? C.qwen : C.white,
       line: { style: "solid", fill: event.active ? C.qwen : C.blue, width: 3 },
     });
-    text(slide, event.date, { left: 460, top: y - 1, width: 205, height: 34 }, {
+    text(slide, event.date, { left: 490, top: y - 1, width: 205, height: 34 }, {
       size: 22,
       color: C.ink,
     });
-    text(slide, event.org, { left: 690, top: y - 9, width: 540, height: 26 }, {
+    text(slide, event.org, { left: 720, top: y - 9, width: 510, height: 26 }, {
       size: 20,
       color: C.ink,
     });
-    text(slide, event.work, { left: 690, top: y + 20, width: 540, height: 25 }, {
+    text(slide, event.work, { left: 720, top: y + 20, width: 510, height: 25 }, {
       size: 17,
       color: C.ink,
     });
