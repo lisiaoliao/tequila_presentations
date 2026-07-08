@@ -20,6 +20,7 @@ export const FINAL_OUT = process.env.PPTX_OUT
   ? path.resolve(process.env.PPTX_OUT)
   : path.join(OUTPUT_DIR, "转正答辩_千问模板.pptx");
 export const DEFAULT_FINAL_OUT = path.join(OUTPUT_DIR, "转正答辩_千问模板.pptx");
+export const PREVIEW_SCALE = Number.parseFloat(process.env.PREVIEW_SCALE ?? "2");
 
 export const SECTION_CONFIGS = [
   {
@@ -254,9 +255,9 @@ export async function writePresentationPreview(presentation, previewDir) {
   }
   for (const [index, slide] of presentation.slides.items.entries()) {
     const stem = `slide-${String(index + 1).padStart(2, "0")}`;
-    await writeBlob(path.join(previewDir, `${stem}.png`), await presentation.export({ slide, format: "png", scale: 1 }));
+    await writeBlob(path.join(previewDir, `${stem}.png`), await presentation.export({ slide, format: "png", scale: PREVIEW_SCALE }));
   }
-  await writeBlob(path.join(previewDir, "deck-montage.webp"), await presentation.export({ format: "webp", montage: true, scale: 1 }));
+  await writeBlob(path.join(previewDir, "deck-montage.webp"), await presentation.export({ format: "webp", montage: true, scale: PREVIEW_SCALE }));
 }
 
 export async function renderPptxPreview(pptxPath, previewDir) {

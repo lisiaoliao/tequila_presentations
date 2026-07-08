@@ -223,35 +223,35 @@ async function addReadableAppendixSlides() {
     marker: "A1",
     title: "附录 | Tokenizer 输入样例",
     imageFile: md("img31_u274a1e51.png"),
-    imagePosition: { left: 70, top: 166, width: 1120, height: 377 },
+    imagePosition: { left: 60, top: 150, width: 1160, height: 390 },
     imageAlt: "Tokenizer 输入样例表",
   });
   await addAppendixSlide({
     marker: "A2",
     title: "附录 | CPT 输入样例",
     imageFile: md("img32_u9fe477fe.png"),
-    imagePosition: { left: 140, top: 132, width: 1000, height: 561 },
+    imagePosition: { left: 122, top: 126, width: 1036, height: 582 },
     imageAlt: "CPT 输入样例表",
   });
   await addAppendixSlide({
     marker: "A3",
     title: "附录 | SFT 输入样例",
     imageFile: md("img34_u365ab4d6.png"),
-    imagePosition: { left: 74, top: 136, width: 1132, height: 568 },
+    imagePosition: { left: 64, top: 128, width: 1152, height: 578 },
     imageAlt: "SFT 输入样例表",
   });
   await addAppendixSlide({
     marker: "A4",
     title: "附录 | I2I 结构化合规性",
     imageFile: md("img36_u51a9ff4d.png"),
-    imagePosition: { left: 84, top: 150, width: 1112, height: 501 },
+    imagePosition: { left: 68, top: 134, width: 1144, height: 515 },
     imageAlt: "I2I 结构化合规性定义表",
   });
   await addAppendixSlide({
     marker: "A5",
     title: "附录 | LLM-Judge 维度",
     imageFile: md("img37_u0b327924.png"),
-    imagePosition: { left: 356, top: 136, width: 568, height: 492 },
+    imagePosition: { left: 324, top: 128, width: 632, height: 548 },
     imageAlt: "LLM-Judge 维度定义表",
   });
 }
