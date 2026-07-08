@@ -110,7 +110,7 @@ function tuneRouteSummary() {
 
   routeShapes.agentTitle.position = { left: 112, top: 318, width: 270, height: 24 };
   routeShapes.agentBody.position = { left: 112, top: 352, width: 270, height: 64 };
-  routeShapes.agentBody.text = "• 中间决策显式，可解释性强\n• 多轮模型调用与串行工具链\n• 秒级/十秒级时延，成本随复杂度增长";
+  routeShapes.agentBody.text = "• 中间决策显式，可解释性强\n• 多轮模型调用与串行工具链\n• 分钟级时延，成本随复杂度增长";
 
   routeShapes.recTitle.position = { left: 452, top: 318, width: 270, height: 24 };
   routeShapes.recBody.position = { left: 452, top: 352, width: 270, height: 64 };

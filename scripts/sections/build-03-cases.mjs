@@ -536,7 +536,7 @@ await replaceExactText(
   "融合共现、embedding 近邻和教师推理链；在无行为日志场景下构造蒸馏样本与协同知识",
   { slide: 2 },
 );
-await replaceExactText("约束解码优化", "任务级 SID 空间定制", { slide: 2 });
+await replaceExactText("约束解码优化", "限制性解码优化", { slide: 2 });
 await replaceExactText(
   "按任务裁剪 SID 空间，保证合法且减少重复",
   "按题目、搜索、异构任务裁剪候选 SID；减少非法与重复输出，保证结果映射真实在库 Item",
@@ -557,7 +557,7 @@ nudgeTextByValues(
     "异构 Item 统一表征",
     "全流程通用能力保持",
     "多源协同数据挖掘",
-    "任务级 SID 空间定制",
+    "限制性解码优化",
     "全链路自动化评估",
   ],
   6,
@@ -576,7 +576,7 @@ await replaceExactText(
 );
 await replaceRepeatedTextOnSlide(
   "case 1 / case 2",
-  ["2 个 case：命中 / 边界", "2 个 case：题目 -> 多形态资源", "2 个 case：应用题 / 试卷"],
+  ["2 个 case：简单 / 较难", "2 个 case：题目 -> 多形态资源", "2 个 case：应用题 / 试卷"],
   { slide: 3 },
 );
 nudgeTextByValues(
@@ -598,12 +598,12 @@ await replaceExactText(
   { slide: 3 },
 );
 
-await replaceExactText("工作产出与案例 | 题目推荐能力 case 1", "工作产出与案例 | 题目推荐 Case 1", {
+await replaceExactText("工作产出与案例 | 题目推荐能力 case 1", "工作产出与案例 | 题目推荐 Case 1 简单", {
   slide: 4,
 });
 await replaceExactText(
   "质量守恒定律：推荐同知识点、同判据题目",
-  "锚点题目 -> 同判据题目推荐",
+  "锚点题目 -> 简单相似题推荐",
   { slide: 4 },
 );
 await replaceExactText("case 结论", "评价", { slide: 4 });
@@ -613,10 +613,10 @@ await replaceExactText(
   { slide: 4 },
 );
 
-await replaceExactText("工作产出与案例 | 题目推荐能力 case 2", "工作产出与案例 | 题目推荐 Case 2", {
+await replaceExactText("工作产出与案例 | 题目推荐能力 case 2", "工作产出与案例 | 题目推荐 Case 2 较难", {
   slide: 5,
 });
-await replaceExactText("古诗意象判断：对比场景暴露无关科目问题", "锚点题目 -> 边界题目推荐", {
+await replaceExactText("古诗意象判断：对比场景暴露无关科目问题", "锚点题目 -> 较难相似题推荐", {
   slide: 5,
 });
 await replaceExactText("case 结论", "评价", { slide: 5 });

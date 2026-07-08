@@ -122,41 +122,31 @@ function deleteBodyObjects(slide) {
 function refineTitleSlide(slide) {
   deleteBodyObjects(slide);
 
-  shape(slide, "rect", { left: 96, top: 246, width: 88, height: 6 }, { fill: C.qwen });
-  text(slide, "试用期转正答辩", { left: 96, top: 270, width: 660, height: 58 }, {
+  shape(slide, "rect", { left: 96, top: 266, width: 88, height: 6 }, { fill: C.qwen });
+  text(slide, "试用期转正答辩", { left: 96, top: 290, width: 660, height: 58 }, {
     size: 44,
     bold: true,
     color: C.ink,
   });
-  text(slide, "教育 OneRec 探索", { left: 98, top: 342, width: 420, height: 36 }, {
+  text(slide, "教育 OneRec 探索", { left: 98, top: 362, width: 420, height: 36 }, {
     size: 28,
     bold: true,
     color: C.qwen,
   });
-  shape(slide, "rect", { left: 98, top: 398, width: 520, height: 2 }, { fill: C.line });
+  shape(slide, "rect", { left: 98, top: 418, width: 520, height: 2 }, { fill: C.line });
 
-  text(slide, "李思奥（龙舌兰）", { left: 98, top: 440, width: 360, height: 28 }, {
+  text(slide, "李思奥（龙舌兰）", { left: 98, top: 458, width: 360, height: 28 }, {
     size: 22,
     bold: true,
     color: C.ink,
   });
-  text(slide, "2026.04.13 – 2026.07.12", { left: 98, top: 476, width: 360, height: 24 }, {
+  text(slide, "2026.04.13 – 2026.07.12", { left: 98, top: 494, width: 360, height: 24 }, {
     size: 17,
     color: C.body,
-  });
-  text(slide, "从教育资源理解到可约束、可评估的生成式推荐链路", { left: 98, top: 542, width: 660, height: 32 }, {
-    size: 22,
-    color: C.ink,
   });
 
   shape(slide, "ellipse", { left: 1042, top: 238, width: 56, height: 56 }, { fill: C.blue });
   shape(slide, "ellipse", { left: 972, top: 146, width: 116, height: 116 }, { fill: "#D9D7FF" });
-  text(slide, "OneRec", { left: 942, top: 514, width: 260, height: 44 }, {
-    size: 34,
-    bold: true,
-    color: C.white,
-    align: "center",
-  });
   text(slide, "Qwen | 学习创新", { left: 942, top: 566, width: 260, height: 22 }, {
     size: 15,
     bold: true,
